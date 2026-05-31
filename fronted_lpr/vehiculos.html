@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema LPR - Gestión de Vehículos</title>
+    
+    <link rel="stylesheet" href="css/dash-estilos.css">
+    <link rel="stylesheet" href="css/vehiculos-estilos.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="dash-contenedor-general">
+        
+        <aside class="dash-sidebar">
+            <div class="dash-sidebar-logo">
+                <i data-lucide="shield" class="dash-icono-logo"></i>
+                <span class="dash-texto-logo">CONTROL LPR</span>
+            </div>
+            
+            <nav class="dash-sidebar-menu">
+                <a href="dashboard.html" class="dash-menu-item">
+                    <i data-lucide="layout-dashboard"></i> <span>Inicio</span>
+                </a>
+                <a href="vehiculos.html" class="dash-menu-item dash-activo">
+                    <i data-lucide="car"></i> <span>Vehículos</span>
+                </a>
+                <a href="#" class="dash-menu-item">
+                    <i data-lucide="users"></i> <span>Usuarios</span>
+                </a>
+                <a href="#" class="dash-menu-item">
+                    <i data-lucide="history"></i> <span>Historial</span>
+                </a>
+                <a href="#" class="dash-menu-item">
+                    <i data-lucide="file-text"></i> <span>Reportes</span>
+                </a>
+                <a href="#" class="dash-menu-item">
+                    <i data-lucide="settings"></i> <span>Configuración</span>
+                </a>
+            </nav>
+
+            <div class="dash-sidebar-pie">
+                <p>UNEFA - 2026</p>
+            </div>
+        </aside>
+
+        <div class="dash-contenido-derecha">
+            
+            <header class="dash-navbar">
+                <div class="dash-navbar-titulo">
+                    <h2>SISTEMA DE CONTROL VEHICULAR - BATALLÓN GIRARDOT</h2>
+                </div>
+                
+                <div class="dash-navbar-info">
+                    <div class="dash-info-tiempo">
+                        <i data-lucide="clock"></i>
+                        <span id="dash-reloj">20:45:12</span>
+                    </div>
+                    
+                    <div class="dash-info-perfil">
+                        <div class="dash-perfil-texto">
+                            <span class="dash-perfil-nombre" id="nombre-operador-nav">Tte. C. Martínez</span>
+                            <span class="dash-perfil-rol">Guardia Responsable</span>
+                        </div>
+                        <div class="dash-perfil-avatar">
+                            <i data-lucide="user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="veh-main-container">
+                
+                <section class="veh-columna-formulario">
+                    <div class="veh-tarjeta-modulo">
+                        <div class="veh-tarjeta-cabecera">
+                            <i data-lucide="plus-circle"></i>
+                            <h3>Registrar Nuevo Vehículo</h3>
+                        </div>
+                        
+                        <form id="veh-formulario" class="veh-formulario">
+                            <div class="veh-grupo-input">
+                                <label for="veh-placa">Placa / Matrícula</label>
+                                <input type="text" id="veh-placa" placeholder="Ej: CH540BA" required style="text-transform: uppercase;">
+                            </div>
+
+                            <div class="veh-grupo-input">
+                                <label for="veh-propietario">Propietario (Cédula de Identidad)</label>
+                                <input type="text" id="veh-propietario" placeholder="Ej: V-12345678 o FANB-4567" required>
+                            </div>
+
+                            <div class="veh-doble-columna">
+                                <div class="veh-grupo-input">
+                                    <label for="veh-modelo">Modelo / Marca</label>
+                                    <input type="text" id="veh-modelo" placeholder="Ej: Toyota Hilux" required>
+                                </div>
+                                <div class="veh-grupo-input">
+                                    <label for="veh-color">Color</label>
+                                    <input type="text" id="veh-color" placeholder="Ej: Verde Oliva" required>
+                                </div>
+                            </div>
+
+                            <div class="veh-doble-columna">
+                                <div class="veh-grupo-input">
+                                    <label for="veh-tipo">Tipo de Vehículo</label>
+                                    <select id="veh-tipo" required>
+                                        <option value="" disabled selected>Seleccione...</option>
+                                        <option value="Particular">Particular / Civil</option>
+                                        <option value="Militar">Táctico / Militar</option>
+                                        <option value="Oficial">Oficial / Administrativo</option>
+                                    </select>
+                                </div>
+                                <div class="veh-grupo-input">
+                                    <label for="veh-estado">Estado del Acceso</label>
+                                    <select id="veh-estado" required>
+                                        <option value="" disabled selected>Seleccione...</option>
+                                        <option value="Autorizado">Autorizado</option>
+                                        <option value="Bloqueado">Bloqueado</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="veh-grupo-input" style="flex-direction: row; align-items: center; gap: 10px; margin: 10px 0; background: rgba(0,0,0,0.03); padding: 10px; border-radius: 6px;">
+                                <input type="checkbox" id="veh-acceso-libre" checked style="width: auto; cursor: pointer;">
+                                <label for="veh-acceso-libre" style="margin-bottom: 0; cursor: pointer; font-weight: bold;">¿Acceso Libre Total (24/7 en Perímetro)?</label>
+                            </div>
+
+                            <div id="veh-contenedor-reglas" style="display: none; border-left: 3px solid #4a5d4e; padding-left: 10px; margin-bottom: 15px;">
+                                <div class="veh-doble-columna">
+                                    <div class="veh-grupo-input">
+                                        <label for="veh-hora-inicio">Hora de Entrada Mínima</label>
+                                        <input type="time" id="veh-hora-inicio" value="07:00">
+                                    </div>
+                                    <div class="veh-grupo-input">
+                                        <label for="veh-hora-fin">Hora de Salida Máxima</label>
+                                        <input type="time" id="veh-hora-fin" value="18:00">
+                                    </div>
+                                </div>
+                                <div class="veh-grupo-input">
+                                    <label for="veh-dias">Días de Acceso Permitidos</label>
+                                    <input type="text" id="veh-dias" value="Lunes,Martes,Miercoles,Jueves,Viernes" placeholder="Ej: Lunes,Martes,Miercoles">
+                                </div>
+                            </div>
+
+                            <div class="veh-formulario-botones">
+                                <button type="submit" class="veh-btn veh-btn-guardar">
+                                    <i data-lucide="save"></i> Guardar Vehículo
+                                </button>
+                                <button type="reset" class="veh-btn veh-btn-limpiar" id="veh-btn-limpiar">
+                                    <i data-lucide="rotate-ccw"></i> Limpiar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="veh-columna-tabla">
+                    <div class="veh-tarjeta-modulo">
+                        
+                        <div class="veh-tabla-herramientas">
+                            <div class="veh-barra-busqueda">
+                                <i data-lucide="search" class="veh-icono-buscar"></i>
+                                <input type="text" id="veh-buscar" placeholder="Buscar por placa, propietario o modelo...">
+                            </div>
+                        </div>
+
+                        <div class="veh-tabla-contenedor">
+                            <table class="veh-tabla" id="veh-tabla-datos">
+                                <thead>
+                                    <tr>
+                                        <th>Placa</th>
+                                        <th>Propietario</th>
+                                        <th>Modelo</th>
+                                        <th>Color</th>
+                                        <th>Tipo</th>
+                                        <th>Estado</th>
+                                        <th style="text-align: center;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="veh-fila-interactiva">
+                                        <td><span class="veh-badge-placa">CH540BA</span></td>
+                                        <td>Cap. Alejandro Rondón</td>
+                                        <td>Toyota Hilux</td>
+                                        <td>Verde Oliva</td>
+                                        <td>Militar</td>
+                                        <td><span class="veh-badge-status veh-status-autorizado">Autorizado</span></td>
+                                        <td>
+                                            <div class="veh-tabla-acciones">
+                                                <button class="veh-btn-accion veh-accion-editar" title="Editar Vehículo">
+                                                    <i data-lucide="edit-2"></i>
+                                                </button>
+                                                <button class="veh-btn-accion veh-accion-eliminar" title="Eliminar Vehículo">
+                                                    <i data-lucide="trash-2"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="js/vehiculos.js"></script>
+
+    <script>
+        lucide.createIcons();
+
+        // Reloj en tiempo real para control de guardia
+        setInterval(() => {
+            const reloj = document.getElementById('dash-reloj');
+            if(reloj) {
+                const ahora = new Date();
+                reloj.textContent = ahora.toTimeString().split(' ')[0];
+            }
+        }, 1000);
+
+        // Cambiar el nombre estático del nav por el del operador real logueado
+        const operadorLogueado = localStorage.getItem("operador_nombre");
+        if (operadorLogueado) {
+            document.getElementById("nombre-operador-nav").textContent = operadorLogueado;
+        }
+    </script>
+</body>
+</html>

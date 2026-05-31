@@ -1,0 +1,314 @@
+/* ==========================================================================
+   MÓDULO DE VEHÍCULOS - PROPORCIONES COMPACTAS ALINEADAS AL DASHBOARD (.veh-)
+   CON MICRO-INTERACCIONES Y ANIMACIONES FLUIDAS
+   ========================================================================== */
+
+/* 1. Contenedor de alineación global */
+.veh-main-container {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 20px;
+    align-items: start;
+    width: 100%;
+}
+
+@media (max-width: 1150px) {
+    .veh-main-container {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 16px;
+    }
+}
+
+/* 2. Tarjeta Base del Módulo Escala Fina */
+.veh-tarjeta-modulo {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabecera interna de las tarjetas */
+.veh-tarjeta-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: #f1f5f9;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    padding-bottom: 10px;
+}
+
+.veh-tarjeta-cabecera i {
+    width: 16px;
+    height: 16px;
+    color: #3b82f6;
+}
+
+.veh-tarjeta-cabecera h3 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   FORMULARIO COMPACTO
+   ========================================================================== */
+.veh-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.veh-grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.veh-grupo-input label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.veh-grupo-input input,
+.veh-grupo-input select {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    outline: none;
+    /* Animación de foco acelerada pero orgánica */
+    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease;
+}
+
+.veh-grupo-input input:focus,
+.veh-grupo-input select:focus {
+    border-color: #3b82f6;
+    background-color: #0b1120;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.veh-doble-columna {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* BOTONERA DEL FORMULARIO */
+.veh-formulario-botones {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.veh-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-transform: uppercase;
+    /* Transición suave para transformaciones físicas y cambios de color */
+    transition: background-color 0.2s ease, 
+                color 0.2s ease, 
+                transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.2s ease;
+}
+
+.veh-btn i { width: 14px; height: 14px; }
+
+.veh-btn-guardar {
+    flex: 2;
+    background-color: #2563eb;
+    color: #ffffff;
+}
+.veh-btn-guardar:hover { 
+    background-color: #1d4ed8;
+    transform: translateY(-1px); /* Elevación sutil al posar el mouse */
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.veh-btn-limpiar {
+    flex: 1;
+    background-color: transparent;
+    color: #94a3b8;
+    border: 1px solid #334155;
+}
+.veh-btn-limpiar:hover { 
+    background-color: #334155; 
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Animación de "click" u opresión táctil para ambos botones */
+.veh-btn:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* ==========================================================================
+   BARRA DE BÚSQUEDA Y TABLA UNIFICADA
+   ========================================================================== */
+.veh-tabla-herramientas {
+    margin-bottom: 14px;
+}
+
+.veh-barra-busqueda {
+    position: relative;
+    width: 100%;
+}
+
+.veh-icono-buscar {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    width: 14px;
+    height: 14px;
+    transition: color 0.2s ease;
+}
+
+.veh-barra-busqueda input {
+    width: 100%;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 9px 12px 9px 36px;
+    color: #ffffff;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.veh-barra-busqueda input:focus { 
+    border-color: #3b82f6; 
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+/* Cambia el color del ícono lupa dinámicamente cuando el usuario escribe */
+.veh-barra-busqueda input:focus + .veh-icono-buscar {
+    color: #3b82f6;
+}
+
+/* Tabla Adaptable con Altura Controlada */
+.veh-tabla-contenedor {
+    overflow-x: auto;
+    width: 100%;
+    background-color: #0f172a;
+    border-radius: 8px;
+    border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+.veh-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 12px;
+}
+
+.veh-tabla th {
+    padding: 10px 12px;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    border-bottom: 1px solid #334155;
+    background-color: rgba(15, 23, 42, 0.6);
+}
+
+.veh-tabla td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    color: #e2e8f0;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+/* Desvanecimiento progresivo muy estético al iluminar filas */
+.veh-fila-interactiva {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.veh-fila-interactiva:hover {
+    background-color: rgba(51, 65, 85, 0.3);
+}
+
+.veh-badge-placa {
+    background-color: #1e293b;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #475569;
+    font-family: monospace;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.veh-badge-status {
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.veh-status-autorizado { background-color: rgba(16, 185, 129, 0.12); color: #10b981; }
+.veh-status-bloqueado { background-color: rgba(239, 68, 68, 0.12); color: #ef4444; }
+
+/* BOTONES DE ACCIÓN (Editar y Eliminar) */
+.veh-tabla-acciones {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.veh-btn-accion {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background-color: #1e293b;
+    color: #94a3b8;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Transición ágil para efectos hover y activos */
+    transition: color 0.2s ease, 
+                border-color 0.2s ease, 
+                background-color 0.2s ease, 
+                transform 0.1s ease;
+}
+
+.veh-btn-accion i { width: 12px; height: 12px; }
+
+.veh-accion-editar:hover {
+    color: #3b82f6;
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.veh-accion-eliminar:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+    transform: translateY(-1px);
+}
+
+.veh-btn-accion:active {
+    transform: translateY(1px) scale(0.93);
+}

@@ -1,0 +1,21 @@
+mi git ignore debería verse así no?:
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales locales
+venv/
+.venv/
+env/
+
+# Variables de entorno y datos locales (Seguridad)
+.env
+*.db
+*.sqlite
+
+# Configuración local del Editor (VS Code)
+.vscode/
+.idea/
+*.suo

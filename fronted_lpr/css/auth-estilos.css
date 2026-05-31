@@ -1,0 +1,285 @@
+/* ==========================================================================
+   CONFIGURACIÓN GLOBAL
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f172a;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   MÓDULO DE AUTENTICACIÓN INTERACTIVO (Prefijo: auth-)
+   ========================================================================== */
+
+.auth-contenedor-principal {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+}
+
+.auth-tarjeta {
+    width: 100%;
+    max-width: 420px;
+    background-color: rgba(30, 41, 59, 0.9);
+    backdrop-filter: blur(8px); /* Efecto esmerilado de interfaz técnica */
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+.auth-encabezado {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo-militar {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    animation: auth-pulso infinite 2s ease-in-out;
+    transition: all 0.3s ease;
+}
+
+/* Reacción interactiva del escudo táctico */
+.auth-tarjeta:hover .auth-logo-militar {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.auth-icono-escudo {
+    color: #3b82f6;
+    width: 32px;
+    height: 32px;
+}
+
+.auth-titulo-sistema {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.auth-subtitulo-unidad {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 6px;
+}
+
+#auth-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.auth-grupo-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.auth-label-campo {
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+    transition: color 0.3s ease;
+}
+
+.auth-input-contenedor {
+    position: relative;
+    width: 100%;
+}
+
+.auth-icono-input {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.auth-input-control {
+    width: 100%;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 12px 16px 12px 40px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.auth-input-control::placeholder {
+    color: #475569;
+}
+
+/* Barra Táctica Inferior */
+.auth-linea-activa {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #3b82f6;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+/* Micro-interacciones cuando el usuario se enfoca en el campo */
+.auth-input-control:focus {
+    border-color: #475569;
+    background-color: #0b1120;
+    transform: translateY(-1px);
+}
+
+.auth-input-control:focus ~ .auth-linea-activa {
+    width: 100%;
+}
+
+.auth-input-control:focus ~ .auth-icono-input {
+    color: #3b82f6;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.auth-grupo-campo:focus-within .auth-label-campo {
+    color: #3b82f6;
+}
+
+/* Botón de Entrada Profesional */
+.auth-boton-ingresar {
+    width: 100%;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.auth-boton-ingresar:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.4);
+}
+
+.auth-boton-ingresar:active {
+    transform: translateY(0);
+}
+
+/* Bloque Interactivo de "Registrarse" */
+.auth-opciones-registro {
+    text-align: center;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-texto-registro {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.auth-enlace-registro {
+    font-size: 12px;
+    font-weight: 700;
+    color: #3b82f6;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.auth-icono-enlace {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+
+.auth-enlace-registro:hover {
+    color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.08);
+}
+
+.auth-enlace-registro:hover .auth-icono-enlace {
+    transform: scale(1.15) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Pie de Tarjeta */
+.auth-pie-tarjeta {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.auth-pie-tarjeta p {
+    font-size: 10px;
+    font-weight: 500;
+    color: #475569;
+    letter-spacing: 0.8px;
+}
+
+/* ==========================================================================
+   ANIMACIONES EN CASCADA
+   ========================================================================== */
+@keyframes auth-pulso {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes auth-entrada-suave {
+    from { 
+        opacity: 0; 
+        transform: translateY(12px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.auth-anim-1 { animation: auth-entrada-suave 0.5s ease-out 0.0s both; }
+.auth-anim-2 { animation: auth-entrada-suave 0.5s ease-out 0.1s both; }
+.auth-anim-3 { animation: auth-entrada-suave 0.5s ease-out 0.2s both; }
+.auth-anim-4 { animation: auth-entrada-suave 0.5s ease-out 0.3s both; }
+.auth-anim-5 { animation: auth-entrada-suave 0.5s ease-out 0.4s both; }
+.auth-anim-6 { animation: auth-entrada-suave 0.5s ease-out 0.5s both; }

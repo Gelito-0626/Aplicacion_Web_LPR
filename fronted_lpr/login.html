@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema LPR - Login</title>
+    
+    <link rel="stylesheet" href="css/auth-estilos.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="auth-contenedor-principal">
+        <div class="auth-tarjeta">
+            
+            <div class="auth-encabezado auth-anim-1">
+                <div class="auth-logo-militar">
+                    <i data-lucide="shield" class="auth-icono-escudo"></i>
+                </div>
+                <h1 class="auth-titulo-sistema">SISTEMA DE MONITOREO LPR</h1>
+                <p class="auth-subtitulo-unidad">Control de Acceso Perimetral - UNEFA</p>
+            </div>
+
+            <form id="auth-formulario" novalidate>
+                <div class="auth-grupo-campo auth-anim-2">
+                    <label class="auth-label-campo">Correo Electrónico</label>
+                    <div class="auth-input-contenedor">
+                        <i data-lucide="mail" class="auth-icono-input"></i>
+                        <input type="email" id="correo" class="auth-input-control" placeholder="usuario@unefa.edu.ve" required>
+                        <span class="auth-linea-activa"></span>
+                    </div>
+                </div>
+
+                <div class="auth-grupo-campo auth-anim-3">
+                    <label class="auth-label-campo">Contraseña de Seguridad</label>
+                    <div class="auth-input-contenedor">
+                        <i data-lucide="lock" class="auth-icono-input"></i>
+                        <input type="password" id="contrasena" class="auth-input-control" placeholder="••••••••" required>
+                        <span class="auth-linea-activa"></span>
+                    </div>
+                </div>
+
+                <div class="auth-anim-4" style="width: 100%; margin-top: 8px;">
+                    <button type="submit" class="auth-boton-ingresar">INGRESAR AL SISTEMA</button>
+                </div>
+            </form>
+
+            <div class="auth-opciones-registro auth-anim-5">
+                <p class="auth-texto-registro">¿No tienes una cuenta autorizada?</p>
+                <a href="registro.html" class="auth-enlace-registro">
+                    <i data-lucide="user-plus" class="auth-icono-enlace"></i> Solicitar Registro Militar
+                </a>
+            </div>
+
+            <div class="auth-pie-tarjeta auth-anim-6">
+                <p>U.N.E.F.A. — EXCELENCIA EDUCATIVA ABIERTA AL PUEBLO</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Inicializa los iconos de Lucide
+        lucide.createIcons();
+    </script>
+    <script src="js/login.js"></script>
+</body>
+</html>
