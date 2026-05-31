@@ -1,32 +1,32 @@
-# Sistema LPR - Control Perimetral Autónomo
+# Sistema LPR - Control Perimetral Autonomo
 
-Sistema de Reconocimiento de Matrículas (License Plate Recognition) para control de acceso vehicular en zonas restringidas.
+Sistema de Reconocimiento de Matriculas (License Plate Recognition) para control de acceso vehicular en zonas restringidas. Desarrollado para la UNEFA - 2026.
 
 ## Arquitectura del Sistema
 
 ```mermaid
 graph TB
-    subgraph "Frontend"
-        A[Dashboard HTML/CSS/JS]
+    subgraph Frontend
+        A[Dashboard]
     end
     
-    subgraph "Backend FastAPI"
+    subgraph Backend
         B[WebSocket Server]
         C[REST API]
         D[SQLAlchemy ORM]
     end
     
-    subgraph "Base de Datos"
+    subgraph BaseDeDatos
         E[(SQLite)]
     end
     
-    subgraph "Agente IA"
+    subgraph AgenteIA
         F[YOLOv8]
-        G[Cámara Web]
+        G[Camara Web]
     end
     
     G -->|Video| F
-    F -->|Detección| C
+    F -->|POST deteccion| C
     C --> D
     D --> E
     C --> B
