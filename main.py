@@ -235,3 +235,6 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+git add main.py
+git commit -m "fix: reintento de bloqueo de seguridad"
+git push origin main
