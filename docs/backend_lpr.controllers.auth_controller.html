@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module backend_lpr.controllers.auth_controller</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="backend_lpr.html" class="white">backend_lpr</a>.<a href="backend_lpr.controllers.html" class="white">controllers</a>.auth_controller</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cmi%20pc%20personal%5Cdesktop%5Csistema_lpr%5Cbackend_lpr%5Ccontrollers%5Cauth_controller.py">c:\users\mi pc personal\desktop\sistema_lpr\backend_lpr\controllers\auth_controller.py</a></td></tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="hashlib.html">hashlib</a><br>
+</td><td class="multicolumn"></td><td class="multicolumn"></td><td class="multicolumn"></td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-hash_clave"><strong>hash_clave</strong></a>(clave: str) -&gt; str</dt><dd><span class="code">Devuelve&nbsp;el&nbsp;hash&nbsp;SHA-256&nbsp;de&nbsp;una&nbsp;contraseña</span></dd></dl>
+ <dl><dt><a name="-login_usuario"><strong>login_usuario</strong></a>(datos: backend_lpr.schemas.validaciones.UsuarioLogin, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x000001E7406299E0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">#&nbsp;🔐&nbsp;1.&nbsp;ENDPOINT&nbsp;DE&nbsp;LOGIN&nbsp;(Para&nbsp;iniciar&nbsp;sesión)</span></dd></dl>
+ <dl><dt><a name="-registro_usuario"><strong>registro_usuario</strong></a>(datos: backend_lpr.schemas.validaciones.UsuarioCreate, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x000001E7406299E0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">#&nbsp;👤&nbsp;2.&nbsp;ENDPOINT&nbsp;DE&nbsp;REGISTRO&nbsp;(Para&nbsp;guardar&nbsp;personal&nbsp;nuevo)</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>router</strong> = &lt;fastapi.routing.APIRouter object&gt;</td></tr></table>
+</body></html>

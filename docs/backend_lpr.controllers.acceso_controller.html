@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module backend_lpr.controllers.acceso_controller</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="backend_lpr.html" class="white">backend_lpr</a>.<a href="backend_lpr.controllers.html" class="white">controllers</a>.acceso_controller</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cmi%20pc%20personal%5Cdesktop%5Csistema_lpr%5Cbackend_lpr%5Ccontrollers%5Cacceso_controller.py">c:\users\mi pc personal\desktop\sistema_lpr\backend_lpr\controllers\acceso_controller.py</a></td></tr></table>
+    <p><span class="code">Controlador&nbsp;de&nbsp;Acceso&nbsp;-&nbsp;Sistema&nbsp;AEGIS&nbsp;LPR<br>
+Maneja&nbsp;la&nbsp;detección&nbsp;de&nbsp;placas,&nbsp;verificación&nbsp;de&nbsp;acceso&nbsp;e&nbsp;historial.</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="PIL.Image.html">PIL.Image</a><br>
+<a href="PIL.ImageEnhance.html">PIL.ImageEnhance</a><br>
+</td><td class="multicolumn"><a href="PIL.ImageFilter.html">PIL.ImageFilter</a><br>
+<a href="cv2.html">cv2</a><br>
+</td><td class="multicolumn"><a href="io.html">io</a><br>
+<a href="numpy.html">numpy</a><br>
+</td><td class="multicolumn"><a href="pytesseract.html">pytesseract</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-guardar_registro"><strong>guardar_registro</strong></a>(db: sqlalchemy.orm.session.Session, placa: str, estado: str, motivo: str)</dt><dd><span class="code">Guarda&nbsp;un&nbsp;registro&nbsp;de&nbsp;acceso&nbsp;en&nbsp;la&nbsp;base&nbsp;de&nbsp;datos.<br>
+Evita&nbsp;duplicados&nbsp;de&nbsp;la&nbsp;misma&nbsp;placa&nbsp;en&nbsp;menos&nbsp;de&nbsp;10&nbsp;segundos.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;Sesión&nbsp;de&nbsp;base&nbsp;de&nbsp;datos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placa:&nbsp;Placa&nbsp;detectada<br>
+&nbsp;&nbsp;&nbsp;&nbsp;estado:&nbsp;PERMITIDO&nbsp;o&nbsp;DENEGADO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;motivo:&nbsp;Descripción&nbsp;del&nbsp;resultado</span></dd></dl>
+ <dl><dt><a name="-leer_placa_imagen"><strong>leer_placa_imagen</strong></a>(imagen_bytes)</dt><dd><span class="code">Detecta&nbsp;y&nbsp;lee&nbsp;una&nbsp;placa&nbsp;vehicular&nbsp;desde&nbsp;una&nbsp;imagen.<br>
+Utiliza&nbsp;YOLO&nbsp;para&nbsp;detectar&nbsp;la&nbsp;región&nbsp;y&nbsp;PyTesseract&nbsp;para&nbsp;OCR.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;imagen_bytes:&nbsp;Bytes&nbsp;de&nbsp;la&nbsp;imagen&nbsp;a&nbsp;procesar<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Tupla&nbsp;(texto_placa,&nbsp;confianza)&nbsp;o&nbsp;(None,&nbsp;0)&nbsp;si&nbsp;no&nbsp;se&nbsp;detecta</span></dd></dl>
+ <dl><dt><a name="-mejorar_imagen_ocr"><strong>mejorar_imagen_ocr</strong></a>(recorte)</dt><dd><span class="code">Mejora&nbsp;la&nbsp;calidad&nbsp;de&nbsp;un&nbsp;recorte&nbsp;de&nbsp;imagen&nbsp;para&nbsp;OCR.<br>
+Aplica&nbsp;escala&nbsp;de&nbsp;grises,&nbsp;ecualización,&nbsp;redimensión&nbsp;y&nbsp;binarización.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recorte:&nbsp;Imagen&nbsp;recortada&nbsp;de&nbsp;la&nbsp;placa<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Imagen&nbsp;procesada&nbsp;optimizada&nbsp;para&nbsp;Tesseract</span></dd></dl>
+ <dl><dt><a name="-obtener_estadisticas"><strong>obtener_estadisticas</strong></a>(db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000013A8B589BC0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">Obtiene&nbsp;estadísticas&nbsp;generales&nbsp;del&nbsp;sistema.</span></dd></dl>
+ <dl><dt><a name="-obtener_historial"><strong>obtener_historial</strong></a>(desde: Optional[str] = None, hasta: Optional[str] = None, estado: Optional[str] = None, placa: Optional[str] = None, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000013A8B589BC0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">Obtiene&nbsp;el&nbsp;historial&nbsp;de&nbsp;accesos&nbsp;con&nbsp;filtros&nbsp;opcionales.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;desde:&nbsp;Fecha&nbsp;inicio&nbsp;(YYYY-MM-DD)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hasta:&nbsp;Fecha&nbsp;fin&nbsp;(YYYY-MM-DD)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;estado:&nbsp;PERMITIDO&nbsp;o&nbsp;DENEGADO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placa:&nbsp;Búsqueda&nbsp;por&nbsp;placa<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;Sesión&nbsp;de&nbsp;base&nbsp;de&nbsp;datos</span></dd></dl>
+ <dl><dt><a name="-preprocesar_imagen"><strong>preprocesar_imagen</strong></a>(imagen_bytes)</dt><dd><span class="code">Preprocesa&nbsp;una&nbsp;imagen&nbsp;con&nbsp;PIL&nbsp;antes&nbsp;de&nbsp;pasarla&nbsp;a&nbsp;YOLO.<br>
+Aplica&nbsp;escala&nbsp;de&nbsp;grises,&nbsp;aumento&nbsp;de&nbsp;contraste&nbsp;y&nbsp;filtro&nbsp;de&nbsp;nitidez.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;imagen_bytes:&nbsp;Bytes&nbsp;de&nbsp;la&nbsp;imagen&nbsp;original<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Imagen&nbsp;procesada&nbsp;en&nbsp;formato&nbsp;OpenCV</span></dd></dl>
+ <dl><dt><a name="-procesar_deteccion_placa"><strong>procesar_deteccion_placa</strong></a>(datos, db: sqlalchemy.orm.session.Session) -&gt; dict</dt><dd><span class="code">Procesa&nbsp;una&nbsp;detección&nbsp;de&nbsp;placa&nbsp;y&nbsp;determina&nbsp;si&nbsp;el&nbsp;acceso&nbsp;es&nbsp;permitido.<br>
+Verifica&nbsp;existencia&nbsp;del&nbsp;vehículo,&nbsp;estado&nbsp;de&nbsp;bloqueo&nbsp;y&nbsp;horarios.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;datos:&nbsp;Objeto&nbsp;DeteccionPlacaInput&nbsp;con&nbsp;placa&nbsp;y&nbsp;timestamp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;db:&nbsp;Sesión&nbsp;de&nbsp;base&nbsp;de&nbsp;datos<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Diccionario&nbsp;con&nbsp;estado,&nbsp;mensaje,&nbsp;placa,&nbsp;propietario&nbsp;y&nbsp;timestamp</span></dd></dl>
+ <dl><dt>async <a name="-procesar_imagen_subida"><strong>procesar_imagen_subida</strong></a>(file: fastapi.datastructures.UploadFile = File(None), placa_manual: Optional[str] = Form(None), db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000013A8B589BC0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">Endpoint&nbsp;para&nbsp;procesar&nbsp;una&nbsp;imagen&nbsp;de&nbsp;placa&nbsp;o&nbsp;una&nbsp;placa&nbsp;manual.<br>
+Recibe&nbsp;archivo&nbsp;de&nbsp;imagen&nbsp;o&nbsp;texto&nbsp;manual&nbsp;y&nbsp;devuelve&nbsp;el&nbsp;resultado&nbsp;de&nbsp;la&nbsp;verificación.</span></dd></dl>
+ <dl><dt><a name="-procesar_placa_manual"><strong>procesar_placa_manual</strong></a>(placa: str, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000013A8B589BC0&gt;, use_cache=True, scope=None))</dt><dd><span class="code">Procesa&nbsp;una&nbsp;placa&nbsp;ingresada&nbsp;manualmente&nbsp;por&nbsp;el&nbsp;operador.</span></dd></dl>
+ <dl><dt><a name="-verificar_horario_acceso"><strong>verificar_horario_acceso</strong></a>(vehiculo, hora_actual, dia_actual: int) -&gt; bool</dt><dd><span class="code">Verifica&nbsp;si&nbsp;un&nbsp;vehículo&nbsp;tiene&nbsp;permiso&nbsp;de&nbsp;acceso&nbsp;en&nbsp;el&nbsp;día&nbsp;y&nbsp;hora&nbsp;actual.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;vehiculo:&nbsp;Objeto&nbsp;Vehiculo&nbsp;con&nbsp;horarios&nbsp;y&nbsp;días&nbsp;permitidos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hora_actual:&nbsp;Hora&nbsp;actual&nbsp;(tipo&nbsp;time)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dia_actual:&nbsp;Día&nbsp;de&nbsp;la&nbsp;semana&nbsp;(0=Lunes,&nbsp;6=Domingo)<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;True&nbsp;si&nbsp;el&nbsp;acceso&nbsp;está&nbsp;permitido,&nbsp;False&nbsp;en&nbsp;caso&nbsp;contrario</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>MODELO_PATH</strong> = 'best.pt'<br>
+<strong>Optional</strong> = typing.Optional<br>
+<strong>modelo_yolo</strong> = YOLO(
+  (model): DetectionModel(
+    (model): Se...(1, 1), bias=False)
+        )
+      )
+    )
+  )
+)<br>
+<strong>router</strong> = &lt;fastapi.routing.APIRouter object&gt;</td></tr></table>
+</body></html>
