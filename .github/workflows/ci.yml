@@ -10,21 +10,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: Descargar código
-      uses: actions/checkout@v4
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
 
-    - name: Instalar Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-    - name: Instalar dependencias
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Instalar dependencias del sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0 tesseract-ocr tesseract-ocr-spa || true
 
-    - name: Verificar sintaxis del Backend y el Agente
-      run: |
-        python -m py_compile main.py agente_lpr.py
-        echo "Sintaxis de los archivos principales verificada con éxito."
+      - name: Instalar dependencias Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi uvicorn sqlalchemy pydantic requests python-multipart watchfiles
+          pip install opencv-python-headless ultralytics pytesseract pillow
+          pip install pytest httpx
+
+      - name: Ejecutar pruebas unitarias
+        run: |
+          pytest test_main.py -v
