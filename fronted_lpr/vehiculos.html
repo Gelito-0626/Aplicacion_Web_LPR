@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema LPR - Gestión de Vehículos</title>
+    <title>AEGIS LPR - Gestión de Vehículos</title>
     
     <link rel="stylesheet" href="css/dash-estilos.css">
-    <link rel="stylesheet" href="css/vehiculos-estilos.css">
+    <link rel="stylesheet" href="css/modulos-estilos.css">
     
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -17,7 +17,7 @@
         <aside class="dash-sidebar">
             <div class="dash-sidebar-logo">
                 <i data-lucide="shield" class="dash-icono-logo"></i>
-                <span class="dash-texto-logo">CONTROL LPR</span>
+                <span class="dash-texto-logo">AEGIS LPR</span>
             </div>
             
             <nav class="dash-sidebar-menu">
@@ -27,22 +27,19 @@
                 <a href="vehiculos.html" class="dash-menu-item dash-activo">
                     <i data-lucide="car"></i> <span>Vehículos</span>
                 </a>
-                <a href="#" class="dash-menu-item">
+                <a href="usuarios.html" class="dash-menu-item">
                     <i data-lucide="users"></i> <span>Usuarios</span>
                 </a>
-                <a href="#" class="dash-menu-item">
+                <a href="historial.html" class="dash-menu-item">
                     <i data-lucide="history"></i> <span>Historial</span>
                 </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="file-text"></i> <span>Reportes</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="settings"></i> <span>Configuración</span>
-                </a>
+                <button id="dash-btn-modo" class="dash-menu-item" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                    <i data-lucide="moon"></i> <span id="dash-texto-modo">Modo Nocturno</span>
+                </button>
             </nav>
 
             <div class="dash-sidebar-pie">
-                <p>UNEFA - 2026</p>
+                <p>AEGIS 2026</p>
             </div>
         </aside>
 
@@ -50,13 +47,13 @@
             
             <header class="dash-navbar">
                 <div class="dash-navbar-titulo">
-                    <h2>SISTEMA DE CONTROL VEHICULAR - BATALLÓN GIRARDOT</h2>
+                    <h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2>
                 </div>
                 
                 <div class="dash-navbar-info">
                     <div class="dash-info-tiempo">
                         <i data-lucide="clock"></i>
-                        <span id="dash-reloj">20:45:12</span>
+                        <span id="dash-reloj">--:--:--</span>
                     </div>
                     
                     <div class="dash-info-perfil">
@@ -83,29 +80,26 @@
                         <form id="veh-formulario" class="veh-formulario">
                             <div class="veh-grupo-input">
                                 <label for="veh-placa">Placa / Matrícula</label>
-                                <input type="text" id="veh-placa" placeholder="Ej: CH540BA" required style="text-transform: uppercase;">
+                                <input type="text" id="veh-placa" placeholder="Ej: ABCD123 o AD543ED" required style="text-transform: uppercase;">
                             </div>
-
                             <div class="veh-grupo-input">
-                                <label for="veh-propietario">Propietario (Cédula de Identidad)</label>
-                                <input type="text" id="veh-propietario" placeholder="Ej: V-12345678 o FANB-4567" required>
+                                <label for="veh-propietario">Propietario (Nombre y Cédula)</label>
+                                <input type="text" id="veh-propietario" placeholder="Ej: Juan Ramírez - 12345678" required>
                             </div>
-
                             <div class="veh-doble-columna">
                                 <div class="veh-grupo-input">
                                     <label for="veh-modelo">Modelo / Marca</label>
-                                    <input type="text" id="veh-modelo" placeholder="Ej: Toyota Hilux" required>
+                                    <input type="text" id="veh-modelo" placeholder="Ej: Toyota Hilux">
                                 </div>
                                 <div class="veh-grupo-input">
                                     <label for="veh-color">Color</label>
-                                    <input type="text" id="veh-color" placeholder="Ej: Verde Oliva" required>
+                                    <input type="text" id="veh-color" placeholder="Ej: Verde Oliva">
                                 </div>
                             </div>
-
                             <div class="veh-doble-columna">
                                 <div class="veh-grupo-input">
                                     <label for="veh-tipo">Tipo de Vehículo</label>
-                                    <select id="veh-tipo" required>
+                                    <select id="veh-tipo">
                                         <option value="" disabled selected>Seleccione...</option>
                                         <option value="Particular">Particular / Civil</option>
                                         <option value="Militar">Táctico / Militar</option>
@@ -114,36 +108,37 @@
                                 </div>
                                 <div class="veh-grupo-input">
                                     <label for="veh-estado">Estado del Acceso</label>
-                                    <select id="veh-estado" required>
+                                    <select id="veh-estado">
                                         <option value="" disabled selected>Seleccione...</option>
-                                        <option value="Autorizado">Autorizado</option>
-                                        <option value="Bloqueado">Bloqueado</option>
+                                        <option value="PERMITIDO">Autorizado</option>
+                                        <option value="BLOQUEADO">Bloqueado</option>
                                     </select>
                                 </div>
                             </div>
-
+                            <div class="veh-grupo-input">
+                                <label for="veh-observacion">Motivo de Registro / Restricción</label>
+                                <textarea id="veh-observacion" rows="2" placeholder="Ej: Vehículo restringido por orden del comando. Solo acceso lunes y martes."></textarea>
+                            </div>
                             <div class="veh-grupo-input" style="flex-direction: row; align-items: center; gap: 10px; margin: 10px 0; background: rgba(0,0,0,0.03); padding: 10px; border-radius: 6px;">
                                 <input type="checkbox" id="veh-acceso-libre" checked style="width: auto; cursor: pointer;">
-                                <label for="veh-acceso-libre" style="margin-bottom: 0; cursor: pointer; font-weight: bold;">¿Acceso Libre Total (24/7 en Perímetro)?</label>
+                                <label for="veh-acceso-libre" style="margin-bottom: 0; cursor: pointer; font-weight: bold;">¿Acceso Libre Total (24/7)?</label>
                             </div>
-
                             <div id="veh-contenedor-reglas" style="display: none; border-left: 3px solid #4a5d4e; padding-left: 10px; margin-bottom: 15px;">
                                 <div class="veh-doble-columna">
                                     <div class="veh-grupo-input">
-                                        <label for="veh-hora-inicio">Hora de Entrada Mínima</label>
+                                        <label for="veh-hora-inicio">Hora de Entrada</label>
                                         <input type="time" id="veh-hora-inicio" value="07:00">
                                     </div>
                                     <div class="veh-grupo-input">
-                                        <label for="veh-hora-fin">Hora de Salida Máxima</label>
+                                        <label for="veh-hora-fin">Hora de Salida</label>
                                         <input type="time" id="veh-hora-fin" value="18:00">
                                     </div>
                                 </div>
                                 <div class="veh-grupo-input">
-                                    <label for="veh-dias">Días de Acceso Permitidos</label>
+                                    <label for="veh-dias">Días Permitidos</label>
                                     <input type="text" id="veh-dias" value="Lunes,Martes,Miercoles,Jueves,Viernes" placeholder="Ej: Lunes,Martes,Miercoles">
                                 </div>
                             </div>
-
                             <div class="veh-formulario-botones">
                                 <button type="submit" class="veh-btn veh-btn-guardar">
                                     <i data-lucide="save"></i> Guardar Vehículo
@@ -158,50 +153,20 @@
 
                 <section class="veh-columna-tabla">
                     <div class="veh-tarjeta-modulo">
-                        
                         <div class="veh-tabla-herramientas">
                             <div class="veh-barra-busqueda">
                                 <i data-lucide="search" class="veh-icono-buscar"></i>
                                 <input type="text" id="veh-buscar" placeholder="Buscar por placa, propietario o modelo...">
                             </div>
                         </div>
-
                         <div class="veh-tabla-contenedor">
                             <table class="veh-tabla" id="veh-tabla-datos">
                                 <thead>
-                                    <tr>
-                                        <th>Placa</th>
-                                        <th>Propietario</th>
-                                        <th>Modelo</th>
-                                        <th>Color</th>
-                                        <th>Tipo</th>
-                                        <th>Estado</th>
-                                        <th style="text-align: center;">Acciones</th>
-                                    </tr>
+                                    <tr><th>Placa</th><th>Propietario</th><th>Modelo</th><th>Color</th><th>Tipo</th><th>Estado</th></tr>
                                 </thead>
-                                <tbody>
-                                    <tr class="veh-fila-interactiva">
-                                        <td><span class="veh-badge-placa">CH540BA</span></td>
-                                        <td>Cap. Alejandro Rondón</td>
-                                        <td>Toyota Hilux</td>
-                                        <td>Verde Oliva</td>
-                                        <td>Militar</td>
-                                        <td><span class="veh-badge-status veh-status-autorizado">Autorizado</span></td>
-                                        <td>
-                                            <div class="veh-tabla-acciones">
-                                                <button class="veh-btn-accion veh-accion-editar" title="Editar Vehículo">
-                                                    <i data-lucide="edit-2"></i>
-                                                </button>
-                                                <button class="veh-btn-accion veh-accion-eliminar" title="Eliminar Vehículo">
-                                                    <i data-lucide="trash-2"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="veh-tabla-body"></tbody>
                             </table>
                         </div>
-
                     </div>
                 </section>
 
@@ -209,25 +174,40 @@
         </div>
     </div>
 
-    <script src="js/vehiculos.js"></script>
-
     <script>
         lucide.createIcons();
-
-        // Reloj en tiempo real para control de guardia
+        
+        if (localStorage.getItem("modo-oscuro") === "true") {
+            document.body.classList.add("modo-sigilo");
+        }
+        
         setInterval(() => {
             const reloj = document.getElementById('dash-reloj');
-            if(reloj) {
-                const ahora = new Date();
-                reloj.textContent = ahora.toTimeString().split(' ')[0];
-            }
+            if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0];
         }, 1000);
+        
+        const op = localStorage.getItem("operador_nombre");
+        if (op) document.getElementById("nombre-operador-nav").textContent = op;
 
-        // Cambiar el nombre estático del nav por el del operador real logueado
-        const operadorLogueado = localStorage.getItem("operador_nombre");
-        if (operadorLogueado) {
-            document.getElementById("nombre-operador-nav").textContent = operadorLogueado;
+        const btnModo = document.getElementById('dash-btn-modo');
+        const textoModo = document.getElementById('dash-texto-modo');
+        
+        if (document.body.classList.contains("modo-sigilo")) {
+            textoModo.textContent = "Modo Estándar";
+            btnModo.querySelector('i').setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
         }
+
+        btnModo.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('modo-sigilo');
+            const activo = document.body.classList.contains('modo-sigilo');
+            localStorage.setItem("modo-oscuro", activo);
+            textoModo.textContent = activo ? "Modo Estándar" : "Modo Nocturno";
+            btnModo.querySelector('i').setAttribute('data-lucide', activo ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
     </script>
+    <script src="js/vehiculos.js"></script>
 </body>
 </html>

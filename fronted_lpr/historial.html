@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS LPR - Historial de Accesos</title>
+    
+    <link rel="stylesheet" href="css/dash-estilos.css">
+    <link rel="stylesheet" href="css/modulos-estilos.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="dash-contenedor-general">
+        
+        <aside class="dash-sidebar">
+            <div class="dash-sidebar-logo">
+                <i data-lucide="shield" class="dash-icono-logo"></i>
+                <span class="dash-texto-logo">AEGIS LPR</span>
+            </div>
+            
+            <nav class="dash-sidebar-menu">
+                <a href="dashboard.html" class="dash-menu-item">
+                    <i data-lucide="layout-dashboard"></i> <span>Inicio</span>
+                </a>
+                <a href="vehiculos.html" class="dash-menu-item">
+                    <i data-lucide="car"></i> <span>Vehículos</span>
+                </a>
+                <a href="usuarios.html" class="dash-menu-item">
+                    <i data-lucide="users"></i> <span>Usuarios</span>
+                </a>
+                <a href="historial.html" class="dash-menu-item dash-activo">
+                    <i data-lucide="history"></i> <span>Historial</span>
+                </a>
+                <button id="dash-btn-modo" class="dash-menu-item" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                    <i data-lucide="moon"></i> <span id="dash-texto-modo">Modo Nocturno</span>
+                </button>
+            </nav>
+
+            <div class="dash-sidebar-pie">
+                <p>AEGIS 2026</p>
+            </div>
+        </aside>
+
+        <div class="dash-contenido-derecha">
+            
+            <header class="dash-navbar">
+                <div class="dash-navbar-titulo">
+                    <h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2>
+                </div>
+                
+                <div class="dash-navbar-info">
+                    <div class="dash-info-tiempo">
+                        <i data-lucide="clock"></i>
+                        <span id="dash-reloj">--:--:--</span>
+                    </div>
+                    
+                    <div class="dash-info-perfil">
+                        <div class="dash-perfil-texto">
+                            <span class="dash-perfil-nombre" id="nombre-operador-nav">Tte. C. Martínez</span>
+                            <span class="dash-perfil-rol">Guardia Responsable</span>
+                        </div>
+                        <div class="dash-perfil-avatar">
+                            <i data-lucide="user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="veh-main-container" style="grid-template-columns: 1fr;">
+                
+                <section class="veh-columna-tabla" style="grid-column: 1 / -1;">
+                    <div class="veh-tarjeta-modulo">
+                        
+                        <div class="veh-tarjeta-cabecera">
+                            <i data-lucide="history"></i>
+                            <h3>Historial de Accesos</h3>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: end;">
+                            <div class="veh-grupo-input" style="flex: 1; min-width: 140px;">
+                                <label>Desde</label>
+                                <input type="date" id="hist-desde">
+                            </div>
+                            <div class="veh-grupo-input" style="flex: 1; min-width: 140px;">
+                                <label>Hasta</label>
+                                <input type="date" id="hist-hasta">
+                            </div>
+                            <div class="veh-grupo-input" style="flex: 1; min-width: 120px;">
+                                <label>Estado</label>
+                                <select id="hist-estado">
+                                    <option value="">Todos</option>
+                                    <option value="PERMITIDO">Permitido</option>
+                                    <option value="DENEGADO">Denegado</option>
+                                </select>
+                            </div>
+                            <div class="veh-grupo-input" style="flex: 1; min-width: 120px;">
+                                <label>Buscar Placa</label>
+                                <input type="text" id="hist-buscar" placeholder="Ej: ABC123">
+                            </div>
+                            <button onclick="exportarCSV()" class="veh-btn veh-btn-limpiar" style="flex: 0; padding: 9px 16px; margin-bottom: 0; white-space: nowrap;">
+                                <i data-lucide="download"></i> Exportar CSV
+                            </button>
+                        </div>
+
+                        <div class="veh-tabla-contenedor">
+                            <table class="veh-tabla">
+                                <thead>
+                                    <tr><th>Placa</th><th>Fecha y Hora</th><th>Estado</th><th>Motivo</th></tr>
+                                </thead>
+                                <tbody id="hist-tabla-body">
+                                    <tr><td colspan="4" style="text-align:center; padding:20px;">Cargando registros...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 12px; font-size: 12px; color: #94a3b8; text-align: center; font-weight: 600;">
+                            <span id="hist-total">0</span> registros encontrados
+                        </div>
+
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        if (localStorage.getItem("modo-oscuro") === "true") {
+            document.body.classList.add("modo-sigilo");
+        }
+        
+        setInterval(() => {
+            const reloj = document.getElementById('dash-reloj');
+            if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0];
+        }, 1000);
+        const op = localStorage.getItem("operador_nombre");
+        if (op) document.getElementById("nombre-operador-nav").textContent = op;
+
+        const btnModo = document.getElementById('dash-btn-modo');
+        const textoModo = document.getElementById('dash-texto-modo');
+        
+        if (document.body.classList.contains("modo-sigilo")) {
+            textoModo.textContent = "Modo Estándar";
+            btnModo.querySelector('i').setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        btnModo.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('modo-sigilo');
+            const activo = document.body.classList.contains('modo-sigilo');
+            localStorage.setItem("modo-oscuro", activo);
+            textoModo.textContent = activo ? "Modo Estándar" : "Modo Nocturno";
+            btnModo.querySelector('i').setAttribute('data-lucide', activo ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+
+        cargarHistorial();
+        document.getElementById("hist-buscar").addEventListener("input", cargarHistorial);
+        document.getElementById("hist-estado").addEventListener("change", cargarHistorial);
+        document.getElementById("hist-desde").addEventListener("change", cargarHistorial);
+        document.getElementById("hist-hasta").addEventListener("change", cargarHistorial);
+
+        async function cargarHistorial() {
+            const desde = document.getElementById("hist-desde").value;
+            const hasta = document.getElementById("hist-hasta").value;
+            const estado = document.getElementById("hist-estado").value;
+            const placa = document.getElementById("hist-buscar").value.trim();
+
+            let url = "http://127.0.0.1:8000/api/lpr/historial?";
+            const params = [];
+            if (desde) params.push("desde=" + desde);
+            if (hasta) params.push("hasta=" + hasta + "T23:59:59");
+            if (estado) params.push("estado=" + estado);
+            if (placa) params.push("placa=" + placa);
+            url += params.join("&");
+
+            try {
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+                
+                const tbody = document.getElementById("hist-tabla-body");
+                const total = document.getElementById("hist-total");
+                
+                tbody.innerHTML = "";
+                total.textContent = datos.total || 0;
+                
+                if (!datos.registros || datos.registros.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">No hay registros de acceso</td></tr>';
+                    return;
+                }
+                
+                datos.registros.forEach(r => {
+                    const estadoClase = r.estado === "PERMITIDO" ? "veh-status-autorizado" : "veh-status-bloqueado";
+                    const fecha = new Date(r.fecha_hora).toLocaleString('es-VE', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    });
+                    
+                    const fila = document.createElement("tr");
+                    fila.className = "veh-fila-interactiva";
+                    fila.innerHTML = `
+                        <td><span class="veh-badge-placa">${r.placa}</span></td>
+                        <td>${fecha}</td>
+                        <td><span class="veh-badge-status ${estadoClase}">${r.estado === "PERMITIDO" ? "Autorizado" : "Denegado"}</span></td>
+                        <td style="font-size:11px;">${r.motivo || "-"}</td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+                
+            } catch (error) {
+                document.getElementById("hist-tabla-body").innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#ef4444;">Error al conectar con el servidor</td></tr>';
+            }
+        }
+
+        function exportarCSV() {
+            const filas = document.querySelectorAll("#hist-tabla-body tr");
+            let csv = "Placa,Fecha,Estado,Motivo\n";
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll("td");
+                if (celdas.length >= 4 && !celdas[0].textContent.includes("No hay") && !celdas[0].textContent.includes("Error") && !celdas[0].textContent.includes("Cargando")) {
+                    csv += `"${celdas[0].textContent.trim()}","${celdas[1].textContent.trim()}","${celdas[2].textContent.trim()}","${celdas[3].textContent.trim()}"\n`;
+                }
+            });
+            if (csv === "Placa,Fecha,Estado,Motivo\n") { alert("No hay datos para exportar."); return; }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'historial_accesos_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+        }
+    </script>
+</body>
+</html>

@@ -590,3 +590,49 @@ body.modo-sigilo .dash-ia-linea-laser {
 #dash-btn-modo:active i {
     transform: rotate(180deg) scale(0.8);
 }
+/* ==========================================================================
+   DROPDOWN DEL PERFIL - COMPORTAMIENTO AL HACER CLICK
+   ========================================================================== */
+
+/* Muestra el dropdown cuando tiene la clase 'activo' */
+.dash-perfil-dropdown.activo {
+    display: block !important;
+}
+
+/* Quita el comportamiento hover para que solo funcione con click */
+.dash-info-perfil:hover .dash-perfil-dropdown {
+    display: none;
+}
+
+/* Estilos mejorados para los enlaces del dropdown */
+.dash-perfil-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.dash-perfil-dropdown a:last-child {
+    border-bottom: none;
+    color: #ef4444;
+}
+
+.dash-perfil-dropdown a:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #ffffff;
+}
+
+.dash-perfil-dropdown a:last-child:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.dash-perfil-dropdown a i {
+    width: 14px;
+    height: 14px;
+}

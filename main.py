@@ -6,25 +6,44 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 import os
+import hashlib
 
 # 📂 IMPORTACIONES LOGÍSTICAS (CORREGIDO: backend_lpr)
-from backend_lpr.config import engine, get_db
+from backend_lpr.config import engine, get_db, SessionLocal
 from backend_lpr.models import tablas
+from backend_lpr.models.tablas import Usuario
 from backend_lpr.schemas.validaciones import DeteccionPlacaInput
 from backend_lpr.controllers.acceso_controller import procesar_deteccion_placa, router as acceso_router
 from backend_lpr.controllers.auth_controller import router as auth_router
 from backend_lpr.controllers.vehiculo_controller import router as vehiculo_router
+from backend_lpr.controllers.usuario_controller import router as usuario_router
 
 # --- 1. Inicialización y creación automática de las tablas SQLite ---
 print("🔧 Inicializando base de datos...")
 tablas.Base.metadata.create_all(bind=engine)
 print("✅ Base de datos lista")
 
+# --- Crear admin por defecto (con hash de seguridad) ---
+db_admin = SessionLocal()
+existe = db_admin.query(Usuario).filter_by(carnet_militar="00000000").first()
+if not existe:
+    admin = Usuario(
+        carnet_militar="00000000",
+        nombre_apellido="Administrador del Sistema",
+        correo_electronico="comandante@seguridad.mil.ve",
+        rango="Cnel",
+        contrasena=hashlib.sha256("admin123".encode()).hexdigest()
+    )
+    db_admin.add(admin)
+    db_admin.commit()
+    print("✅ Usuario administrador creado: comandante@seguridad.mil.ve / admin123")
+db_admin.close()
+
 # --- 2. Inicialización de la Aplicación FastAPI ---
 app = FastAPI(
     title="Aplicación Web LPR de Control Perimetral Autónomo",
     description="""
-    ## Sistema de Reconocimiento de Matrículas (LPR) - UNEFA
+    ## Sistema de Reconocimiento de Matrículas (LPR)
     
     ### Funcionalidades:
     * **Detección en tiempo real** de placas vehiculares mediante IA.
@@ -33,11 +52,7 @@ app = FastAPI(
     * **Gestión de vehículos** (CRUD completo) autorizados y bloqueados.
     * **Control horario** estricto por días y horas permitidas.
     """,
-    version="2.0.0",
-    contact={
-        "name": "UNEFA 2026",
-        "description": "Desarrollo de Aplicación Web LPR Perimetral",
-    }
+    version="2.0.0"
 )
 
 # --- 3. Middleware de CORS ---
@@ -54,11 +69,13 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(vehiculo_router)
 app.include_router(acceso_router)
+app.include_router(usuario_router)
 
 print("📋 Routers cargados exitosamente:")
-print("   - Auth Controller: /auth/*")
+print("   - Auth Controller: /api/usuarios/*")
 print("   - Vehículo Controller: /api/vehiculos/*")
 print("   - Acceso Controller: /api/lpr/*")
+print("   - Usuario Controller: /api/usuarios/*")
 
 # --- 5. Servir archivos estáticos del frontend ---
 FRONTEND_DIR = "fronted_lpr"
@@ -174,7 +191,7 @@ async def recibir_deteccion_ia(
 def verificar_servidor():
     return {
         "status": "🟢 Servidor backend operativo",
-        "sistema": "Control Perimetral LPR - UNEFA 2026",
+        "sistema": "Control Perimetral LPR",
         "version": "2.0.0",
         "timestamp": datetime.now().isoformat(),
         "clientes_conectados": len(manager.active_connections)

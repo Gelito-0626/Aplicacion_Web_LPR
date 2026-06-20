@@ -3,277 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema LPR - Dashboard Principal</title>
+    <title>AEGIS LPR - Dashboard Principal</title>
     
-    <!-- Enlace al CSS separado del Dashboard -->
     <link rel="stylesheet" href="css/dash-estilos.css">
-    
-    <!-- Iconografía: Carga de Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-    <div class="dash-contenedor-general">
-        
-        <!-- ==========================================
-             BARRA LATERAL (SIDEBAR)
-             ========================================== -->
-        <aside class="dash-sidebar">
-            <div class="dash-sidebar-logo">
-                <i data-lucide="shield" class="dash-icono-logo"></i>
-                <span class="dash-texto-logo">CONTROL LPR</span>
-            </div>
-            
-            <nav class="dash-sidebar-menu">
-                <a href="#" class="dash-menu-item dash-activo">
-                    <i data-lucide="layout-dashboard"></i> <span>Inicio</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="car"></i> <span>Vehículos</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="users"></i> <span>Usuarios</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="history"></i> <span>Historial</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="file-text"></i> <span>Reportes</span>
-                </a>
-                <a href="#" class="dash-menu-item">
-                    <i data-lucide="settings"></i> <span>Configuración</span>
-                </a>
-                </a>
-                <button id="dash-btn-modo" class="dash-menu-item" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
-                    <i data-lucide="moon"></i> <span id="dash-texto-modo">Modo Nocturno</span>
-                </button>
-            </nav>
+    <div id="overlay-panel" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:900;" onclick="cerrarPanel()"></div>
 
-            <div class="dash-sidebar-pie">
-                <p>UNEFA - 2026</p>
+    <div id="panel-perfil" style="position:fixed; top:0; right:-380px; width:380px; height:100%; background:#1e293b; border-left:1px solid #334155; z-index:1000; transition:right 0.3s cubic-bezier(0.4,0,0.2,1); padding:30px 24px; display:flex; flex-direction:column; overflow-y:auto;">
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h3 style="font-size:14px; font-weight:800; letter-spacing:0.5px; color:#f1f5f9;">👤 PERFIL DEL OPERADOR</h3>
+            <button onclick="cerrarPanel()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:20px;">✕</button>
+        </div>
+
+        <div style="background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Nombre y Apellido</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-nombre">---</p></div>
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Rango Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-rango">---</p></div>
+            <div><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Carnet Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9; font-family:monospace;" id="panel-carnet">---</p></div>
+        </div>
+
+        <button onclick="mostrarFormClave()" id="btn-cambiar-clave" style="background:transparent; border:1px solid #334155; color:#e2e8f0; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; margin-bottom:24px; display:flex; align-items:center; gap:10px; width:100%;"><i data-lucide="lock"></i> Cambiar Contraseña</button>
+
+        <div id="form-cambiar-clave" style="display:none; background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
+            <h4 style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.5px;">🔒 NUEVA CONTRASEÑA</h4>
+            <div style="margin-bottom:12px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Nueva Contraseña</label><input type="password" id="input-nueva-clave" placeholder="Mínimo 4 caracteres" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
+            <div style="margin-bottom:16px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Confirmar Contraseña</label><input type="password" id="input-confirmar-clave" placeholder="Repita la contraseña" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="cambiarContrasena()" style="flex:1; background:#2563eb; color:white; border:none; padding:12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">ACTUALIZAR</button>
+                <button onclick="cancelarFormClave()" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:12px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">CANCELAR</button>
             </div>
+            <p id="msg-clave" style="text-align:center; margin-top:10px; font-size:11px; font-weight:600; display:none;"></p>
+        </div>
+
+        <a href="login.html" onclick="localStorage.clear()" style="background:transparent; border:1px solid rgba(239,68,68,0.3); color:#ef4444; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;"><i data-lucide="log-out"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="dash-contenedor-general">
+        <aside class="dash-sidebar">
+            <div class="dash-sidebar-logo"><i data-lucide="shield" class="dash-icono-logo"></i><span class="dash-texto-logo">AEGIS LPR</span></div>
+            <nav class="dash-sidebar-menu">
+                <a href="dashboard.html" class="dash-menu-item dash-activo"><i data-lucide="layout-dashboard"></i> <span>Inicio</span></a>
+                <a href="vehiculos.html" class="dash-menu-item"><i data-lucide="car"></i> <span>Vehículos</span></a>
+                <a href="usuarios.html" class="dash-menu-item"><i data-lucide="users"></i> <span>Usuarios</span></a>
+                <a href="historial.html" class="dash-menu-item"><i data-lucide="history"></i> <span>Historial</span></a>
+                <button id="dash-btn-modo" class="dash-menu-item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;"><i data-lucide="moon"></i> <span id="dash-texto-modo">Modo Nocturno</span></button>
+            </nav>
+            <div class="dash-sidebar-pie"><p>AEGIS 2026</p></div>
         </aside>
 
-        <!-- ==========================================
-             CONTENEDOR DE CONTENIDO (DERECHA)
-             ========================================== -->
         <div class="dash-contenido-derecha">
-            
-            <!-- BARRA SUPERIOR (NAVBAR) -->
             <header class="dash-navbar">
-                <div class="dash-navbar-titulo">
-                    <h2>SISTEMA DE CONTROL VEHICULAR - BATALLÓN GIRARDOT</h2>
-                </div>
-                
+                <div class="dash-navbar-titulo"><h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2></div>
                 <div class="dash-navbar-info">
-                    <div class="dash-info-tiempo">
-                        <i data-lucide="clock"></i>
-                        <span id="dash-reloj">20:45:12</span>
-                    </div>
-                    
-                    <div class="dash-info-perfil">
-                        <div class="dash-perfil-texto">
-                            <span class="dash-perfil-nombre">Tte. C. Martínez</span>
-                            <span class="dash-perfil-rol">Guardia Responsable</span>
-                        </div>
-                        <div class="dash-perfil-avatar">
-                            <i data-lucide="user"></i>
-                            <!-- Menú flotante sutil al tocar el perfil -->
-                            <div class="dash-perfil-dropdown">
-                                <a href="login.html"><i data-lucide="log-out"></i> Cerrar Sesión</a>
-                            </div>
-                        </div>
+                    <div class="dash-info-tiempo"><i data-lucide="clock"></i> <span id="dash-reloj">--:--:--</span></div>
+                    <div class="dash-info-perfil" onclick="abrirPanel()" style="cursor:pointer;">
+                        <div class="dash-perfil-texto"><span class="dash-perfil-nombre" id="nombre-operador-nav">Guardia de Turno</span><span class="dash-perfil-rol">Control Perimetral</span></div>
+                        <div class="dash-perfil-avatar"><i data-lucide="user"></i></div>
                     </div>
                 </div>
             </header>
 
-            <!-- CONTENIDO PRINCIPAL DEL DASHBOARD -->
             <main class="dash-main">
-                
-                <!-- 1. FILA DE TARJETAS ESTADÍSTICAS -->
                 <section class="dash-fila-estadisticas">
-                    <div class="dash-tarjeta-est dash-anim-1">
-                        <div class="dash-est-icono dash-est-azul">
-                            <i data-lucide="shield-check"></i>
-                        </div>
-                        <div class="dash-est-datos">
-                            <span class="dash-est-titulo">Vehículos Registrados</span>
-                            <span class="dash-est-numero">142</span>
-                        </div>
-                    </div>
-                    
-                    <div class="dash-tarjeta-est dash-anim-2">
-                        <div class="dash-est-icono dash-est-rojo">
-                            <i data-lucide="shield-alert"></i>
-                        </div>
-                        <div class="dash-est-datos">
-                            <span class="dash-est-titulo">Vehículos Bloqueados</span>
-                            <span class="dash-est-numero">8</span>
-                        </div>
-                    </div>
-                    
-                    <div class="dash-tarjeta-est dash-anim-3">
-                        <div class="dash-est-icono dash-est-verde">
-                            <i data-lucide="activity"></i>
-                        </div>
-                        <div class="dash-est-datos">
-                            <span class="dash-est-titulo">Accesos Hoy</span>
-                            <span class="dash-est-numero">315</span>
-                        </div>
-                    </div>
+                    <div class="dash-tarjeta-est dash-anim-1"><div class="dash-est-icono dash-est-azul"><i data-lucide="shield-check"></i></div><div class="dash-est-datos"><span class="dash-est-titulo">Vehículos Registrados</span><span class="dash-est-numero" id="dash-total-registrados">0</span></div></div>
+                    <div class="dash-tarjeta-est dash-anim-2"><div class="dash-est-icono dash-est-rojo"><i data-lucide="shield-alert"></i></div><div class="dash-est-datos"><span class="dash-est-titulo">Accesos Denegados</span><span class="dash-est-numero" id="dash-total-denegados">0</span></div></div>
+                    <div class="dash-tarjeta-est dash-anim-3"><div class="dash-est-icono dash-est-verde"><i data-lucide="activity"></i></div><div class="dash-est-datos"><span class="dash-est-titulo">Accesos Hoy</span><span class="dash-est-numero" id="dash-total-accesos">0</span></div></div>
                 </section>
 
-                <!-- 2. SECCIÓN TÁCTICA: CÁMARA E IA (Dos columnas) -->
                 <section class="dash-seccion-monitoreo">
-                    
-                    <!-- Simulación de la Cámara en Vivo -->
                     <div class="dash-bloque-camara dash-anim-4">
-                        <div class="dash-camara-cabecera">
-                            <span class="dash-camara-tag"><span class="dash-punto-vivo"></span> EN VIVO</span>
-                            <span>CAM_01 - ACCESO PERIMETRAL</span>
-                        </div>
-                        <div class="dash-camara-video">
-                            <!-- Esqueleto visual simulando el visor de la cámara -->
-                            <div class="dash-camara-reticula-sup-izq"></div>
-                            <div class="dash-camara-reticula-sup-der"></div>
-                            <div class="dash-camara-reticula-inf-izq"></div>
-                            <div class="dash-camara-reticula-inf-der"></div>
-                            
-                            <!-- Simulación de caja de escaneo de la IA -->
-                            <div class="dash-ia-caja-escaneo">
-                                <span class="dash-ia-linea-laser"></span>
+                        <div class="dash-camara-cabecera"><span class="dash-camara-tag"><span class="dash-punto-vivo"></span> VERIFICACIÓN</span><span>PROCESAMIENTO DE PLACA</span></div>
+                        <div class="dash-camara-video" id="contenedor-camara" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;">
+                            <i data-lucide="upload-cloud" style="width:40px;height:40px;color:#64748b;"></i>
+                            <p style="color:#94a3b8;font-size:12px;text-align:center;">Seleccione una imagen de placa<br>o escriba la matrícula manualmente</p>
+                            <input type="file" id="input-imagen-placa" accept="image/*" style="display:none;">
+                            <button onclick="document.getElementById('input-imagen-placa').click()" class="veh-btn veh-btn-guardar" style="padding:8px 14px;font-size:11px;"><i data-lucide="image"></i> Subir Imagen</button>
+                            <button onclick="procesarImagenManual()" class="veh-btn veh-btn-guardar" style="padding:8px 14px;font-size:11px;margin-top:4px;"><i data-lucide="scan"></i> Procesar Imagen</button>
+                            <div style="display:flex;gap:8px;margin-top:4px;">
+                                <input type="text" id="input-placa-manual" placeholder="O escriba la placa" style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px 12px;color:#fff;font-size:12px;width:160px;text-transform:uppercase;outline:none;">
+                                <button onclick="procesarPlacaManual()" class="veh-btn veh-btn-limpiar" style="padding:8px 14px;font-size:11px;"><i data-lucide="search"></i> Verificar</button>
                             </div>
-                            
-                            <i data-lucide="video" class="dash-icono-camara-fondo"></i>
+                            <img id="preview-imagen" src="" style="max-width:200px;max-height:100px;display:none;border-radius:6px;border:1px solid #334155;">
                         </div>
                     </div>
-
-                    <!-- Tarjeta de Placa Detectada (Análisis de la IA) -->
                     <div class="dash-bloque-analisis dash-anim-5">
-                        <div class="dash-analisis-cabecera">
-                            <h3>ÚLTIMA DETECCIÓN DE MATRÍCULA</h3>
-                        </div>
-                        
-                        <!-- Placa Física Estilo Venezolana -->
-                        <div class="dash-matrícula-vista">
-                            <span class="dash-matricula-pais">VENEZUELA</span>
-                            <span class="dash-matricula-letras">CH540BA</span>
-                        </div>
-
-                        <!-- Ficha de Datos del Propietario -->
+                        <div class="dash-analisis-cabecera"><h3>ÚLTIMA DETECCIÓN DE MATRÍCULA</h3></div>
+                        <div class="dash-matrícula-vista"><span class="dash-matricula-pais">VENEZUELA</span><span class="dash-matricula-letras">---</span></div>
                         <div class="dash-ficha-propietario">
-                            <div class="dash-ficha-fila">
-                                <span class="dash-ficha-label">Propietario:</span>
-                                <span class="dash-ficha-valor">Cap. Alejandro Rondón</span>
-                            </div>
-                            <div class="dash-ficha-fila">
-                                <span class="dash-ficha-label">Rango Militar:</span>
-                                <span class="dash-ficha-valor">Oficial Alterno</span>
-                            </div>
-                            <div class="dash-ficha-fila">
-                                <span class="dash-ficha-label">Unidad Militar:</span>
-                                <span class="dash-ficha-valor">Batallón Girardot</span>
-                            </div>
+                            <div class="dash-ficha-fila"><span class="dash-ficha-label">Propietario:</span><span class="dash-ficha-valor">---</span></div>
+                            <div class="dash-ficha-fila"><span class="dash-ficha-label">Cédula / Carnet:</span><span class="dash-ficha-valor">---</span></div>
+                            <div class="dash-ficha-fila"><span class="dash-ficha-label">Estado:</span><span class="dash-ficha-valor">Esperando detección...</span></div>
                         </div>
-
-                        <!-- Indicadores Dinámicos de Acceso -->
-                        <div class="dash-indicador-acceso dash-acceso-autorizado">
-                            <i data-lucide="check-circle-2"></i> ACCESO AUTORIZADO
-                        </div>
-                        
-                        <!-- Nota: Para denegado usarías esta clase alternable:
-                        <div class="dash-indicador-acceso dash-acceso-denegado">
-                            <i data-lucide="x-circle"></i> ACCESO DENEGADO
-                        </div> -->
+                        <div class="dash-indicador-acceso dash-acceso-autorizado"><i data-lucide="check-circle-2"></i> ESPERANDO LECTURA</div>
                     </div>
-
                 </section>
 
-                <!-- 3. TABLA INFERIOR: ÚLTIMOS REGISTROS -->
                 <section class="dash-seccion-tabla dash-anim-6">
-                    <div class="dash-tabla-cabecera">
-                        <h3>ÚLTIMOS REGISTROS DE ACCESO</h3>
-                    </div>
-                    <div class="dash-tabla-contenedor">
-                        <table class="dash-tabla">
-                            <thead>
-                                <tr>
-                                    <th>Matrícula / Placa</th>
-                                    <th>Hora de Registro</th>
-                                    <th>Estado de Acceso</th>
-                                    <th>Guardia Responsable</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="dash-tabla-placa">CH540BA</span></td>
-                                    <td>20:42:15</td>
-                                    <td><span class="dash-badge-acc dash-badge-autorizado">Autorizado</span></td>
-                                    <td>Tte. C. Martínez</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="dash-tabla-placa">AB123CD</span></td>
-                                    <td>20:15:34</td>
-                                    <td><span class="dash-badge-acc dash-badge-denegado">Denegado</span></td>
-                                    <td>Tte. C. Martínez</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="dash-tabla-placa">AA987ZZ</span></td>
-                                    <td>19:58:12</td>
-                                    <td><span class="dash-badge-acc dash-badge-autorizado">Autorizado</span></td>
-                                    <td>Sgto. J. Blanco</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <div class="dash-tabla-cabecera"><h3>ÚLTIMOS REGISTROS DE ACCESO</h3></div>
+                    <div class="dash-tabla-contenedor"><table class="dash-tabla"><thead><tr><th>Matrícula / Placa</th><th>Fecha y Hora</th><th>Estado de Acceso</th><th>Propietario</th></tr></thead><tbody id="dash-tabla-body"></tbody></table></div>
                 </section>
-
             </main>
         </div>
     </div>
 
+    <script src="js/dashboard.js"></script>
     <script>
-        // Inicializa iconos de Lucide
         lucide.createIcons();
+        if (localStorage.getItem("modo-oscuro") === "true") document.body.classList.add("modo-sigilo");
+        const op = localStorage.getItem("operador_nombre");
+        if (op) document.getElementById("nombre-operador-nav").textContent = op;
+        setInterval(() => { const reloj = document.getElementById('dash-reloj'); if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0]; }, 1000);
 
-        // Reloj Dinámico Técnico en tiempo real
-        setInterval(() => {
-            const reloj = document.getElementById('dash-reloj');
-            if(reloj) {
-                const ahora = new Date();
-                reloj.textContent = ahora.toTimeString().split(' ')[0];
-            }
-        }, 1000);
-    </script>
-    <script>
-        // Código del reloj que ya tenías...
-        setInterval(() => {
-            const reloj = document.getElementById('dash-reloj');
-            if(reloj) {
-                const ahora = new Date();
-                reloj.textContent = ahora.toTimeString().split(' ')[0];
-            }
-        }, 1000);
-
-        // NUEVO: Lógica del Modo Táctico Nocturno
         const btnModo = document.getElementById('dash-btn-modo');
         const textoModo = document.getElementById('dash-texto-modo');
+        setTimeout(() => { if(document.body.classList.contains("modo-sigilo")){ textoModo.textContent="Modo Estándar"; const i=btnModo.querySelector('i'); if(i)i.setAttribute('data-lucide','sun'); lucide.createIcons(); } }, 100);
+        btnModo.addEventListener('click',(e)=>{ e.preventDefault(); document.body.classList.toggle('modo-sigilo'); const a=document.body.classList.contains('modo-sigilo'); localStorage.setItem("modo-oscuro",a); textoModo.textContent=a?"Modo Estándar":"Modo Nocturno"; const i=btnModo.querySelector('i'); if(i)i.setAttribute('data-lucide',a?'sun':'moon'); lucide.createIcons(); });
 
-        btnModo.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.body.classList.toggle('modo-sigilo');
-            
-            // Cambia el texto de forma intuitiva
-            if(document.body.classList.contains('modo-sigilo')) {
-                textoModo.textContent = "Modo Estándar";
-                btnModo.querySelector('i').setAttribute('data-lucide', 'sun');
-            } else {
-                textoModo.textContent = "Modo Nocturno";
-                btnModo.querySelector('i').setAttribute('data-lucide', 'moon');
+        let archivoSeleccionado = null;
+        document.getElementById('input-imagen-placa').addEventListener('change', previewImagen);
+
+        function previewImagen(event) {
+            archivoSeleccionado = event.target.files[0];
+            if (archivoSeleccionado) {
+                const reader = new FileReader();
+                reader.onload = function(e) { document.getElementById('preview-imagen').src = e.target.result; document.getElementById('preview-imagen').style.display = 'block'; };
+                reader.readAsDataURL(archivoSeleccionado);
             }
-            lucide.createIcons(); // Recarga el icono visualmente
-        });
+        }
+
+        async function procesarImagenManual() {
+            if (!archivoSeleccionado) { alert('Seleccione una imagen primero'); return; }
+            await procesarImagen(archivoSeleccionado);
+        }
+
+        async function procesarImagen(file) {
+            const formData = new FormData(); formData.append('file', file);
+            try {
+                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { method: 'POST', body: formData });
+                const data = await r.json();
+                if (r.ok) procesarDeteccion(data); else alert('⚠️ ' + (data.detail || 'No se pudo leer'));
+            } catch(e) { console.error(e); }
+        }
+
+        async function procesarPlacaManual() {
+            const placa = document.getElementById('input-placa-manual').value.trim();
+            if (!placa) { alert('Escriba una placa'); return; }
+            const formData = new FormData(); formData.append('placa_manual', placa);
+            try {
+                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { method: 'POST', body: formData });
+                const data = await r.json();
+                if (r.ok) { procesarDeteccion(data); document.getElementById('input-placa-manual').value = ''; }
+            } catch(e) { console.error(e); }
+        }
+
+        function abrirPanel() { document.getElementById("panel-perfil").style.right="0"; document.getElementById("overlay-panel").style.display="block"; document.getElementById("panel-nombre").textContent=localStorage.getItem("operador_nombre")||"---"; document.getElementById("panel-rango").textContent=localStorage.getItem("operador_rango")||"---"; document.getElementById("panel-carnet").textContent=localStorage.getItem("operador_carnet")||"---"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; lucide.createIcons(); }
+        function cerrarPanel() { document.getElementById("panel-perfil").style.right="-380px"; document.getElementById("overlay-panel").style.display="none"; }
+        function mostrarFormClave() { document.getElementById("btn-cambiar-clave").style.display="none"; document.getElementById("form-cambiar-clave").style.display="block"; }
+        function cancelarFormClave() { document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; }
+        function cambiarContrasena() {
+            const nueva = document.getElementById("input-nueva-clave").value, confirmar = document.getElementById("input-confirmar-clave").value, msg = document.getElementById("msg-clave");
+            if (!nueva || nueva.length < 4) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ Mínimo 4 caracteres."; return; }
+            if (nueva !== confirmar) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ No coinciden."; return; }
+            const carnet = localStorage.getItem("operador_carnet");
+            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({carnet_militar:carnet,nombre_apellido:localStorage.getItem("operador_nombre"),correo_electronico:"",rango:localStorage.getItem("operador_rango"),contrasena:nueva}) })
+            .then(r => r.json()).then(data => { msg.style.display="block"; msg.textContent = data.actualizado ? "✅ Contraseña actualizada." : "❌ Error."; msg.style.color = data.actualizado ? "#10b981" : "#ef4444"; });
+        }
     </script>
-    <script src="js/dashboard.js"></script>
 </body>
 </html>
