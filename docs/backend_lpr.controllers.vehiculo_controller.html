@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module backend_lpr.controllers.vehiculo_controller</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title"><a href="backend_lpr.html" class="white">backend_lpr</a>.<a href="backend_lpr.controllers.html" class="white">controllers</a>.vehiculo_controller</strong></td>
+<td class="extra"><a href=".">index</a><br><a href="file:c%3A%5Cusers%5Cmi%20pc%20personal%5Cdesktop%5Csistema_lpr%5Cbackend_lpr%5Ccontrollers%5Cvehiculo_controller.py">c:\users\mi pc personal\desktop\sistema_lpr\backend_lpr\controllers\vehiculo_controller.py</a></td></tr></table>
+    <p></p>
+<p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-actualizar_vehiculo"><strong>actualizar_vehiculo</strong></a>(placa: str, datos: backend_lpr.schemas.validaciones.VehiculoUpdate, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000020D8EDD99E0&gt;, use_cache=True, scope=None))</dt></dl>
+ <dl><dt><a name="-buscar_por_placa"><strong>buscar_por_placa</strong></a>(placa: str, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000020D8EDD99E0&gt;, use_cache=True, scope=None))</dt></dl>
+ <dl><dt><a name="-eliminar_vehiculo"><strong>eliminar_vehiculo</strong></a>(placa: str, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000020D8EDD99E0&gt;, use_cache=True, scope=None))</dt></dl>
+ <dl><dt><a name="-listar_vehiculos"><strong>listar_vehiculos</strong></a>(skip: int = Query(0), limit: int = Query(100), estado: Optional[str] = Query(None), busqueda: Optional[str] = Query(None), db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000020D8EDD99E0&gt;, use_cache=True, scope=None))</dt></dl>
+ <dl><dt><a name="-registrar_vehiculo"><strong>registrar_vehiculo</strong></a>(datos: backend_lpr.schemas.validaciones.VehiculoCreate, db: sqlalchemy.orm.session.Session = Depends(dependency=&lt;function get_db at 0x0000020D8EDD99E0&gt;, use_cache=True, scope=None))</dt></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>List</strong> = typing.List<br>
+<strong>Optional</strong> = typing.Optional<br>
+<strong>router</strong> = &lt;fastapi.routing.APIRouter object&gt;</td></tr></table>
+</body></html>
