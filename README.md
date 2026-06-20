@@ -229,3 +229,17 @@ graph TD
     UC10 -.->|extend| UC8
     
     UC12 -.->|extend| UC11
+
+    ## 📚 Documentacion Tecnica
+
+El proyecto utiliza **Docstrings de Python** para documentación interna. Para generar la documentación técnica automáticamente:
+
+```bash
+# Generar documentación en consola
+python -m pydoc backend_lpr.controllers.acceso_controller
+
+# Generar documentación HTML
+python -m pydoc -w backend_lpr.controllers.acceso_controller
+python -m pydoc -w backend_lpr.controllers.vehiculo_controller
+python -m pydoc -w backend_lpr.controllers.auth_controller
+python -m pydoc -w backend_lpr.controllers.usuario_controller
