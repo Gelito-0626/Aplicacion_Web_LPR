@@ -312,3 +312,73 @@
 .veh-btn-accion:active {
     transform: translateY(1px) scale(0.93);
 }
+/* ==========================================================================
+   TEXTAREA DE OBSERVACIÓN
+   ========================================================================== */
+.veh-grupo-input textarea {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    outline: none;
+    resize: vertical;
+    min-height: 50px;
+    font-family: inherit;
+    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s ease;
+}
+
+.veh-grupo-input textarea:focus {
+    border-color: #3b82f6;
+    background-color: #0b1120;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.veh-grupo-input textarea::placeholder {
+    color: #64748b;
+    font-style: italic;
+}
+/* ==========================================================================
+   MODO SIGILO / OPERACIONES NOCTURNAS PARA MÓDULOS
+   ========================================================================== */
+body.modo-sigilo .veh-tarjeta-modulo,
+body.modo-sigilo .veh-tabla-contenedor,
+body.modo-sigilo .veh-barra-busqueda input,
+body.modo-sigilo .veh-grupo-input input,
+body.modo-sigilo .veh-grupo-input select,
+body.modo-sigilo .veh-grupo-input textarea {
+    background-color: #0b0f14;
+    border-color: #1e293b;
+    transition: background-color 0.5s ease, border-color 0.5s ease;
+}
+
+body.modo-sigilo .veh-tabla th {
+    background-color: rgba(11, 15, 20, 0.8);
+}
+
+body.modo-sigilo .veh-tabla td {
+    border-bottom-color: rgba(30, 41, 59, 0.5);
+}
+
+body.modo-sigilo .veh-badge-placa {
+    background-color: #0b0f14;
+    border-color: #1e293b;
+}
+
+body.modo-sigilo .veh-fila-interactiva:hover {
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+body.modo-sigilo .veh-btn-limpiar {
+    border-color: #1e293b;
+    color: #64748b;
+}
+
+body.modo-sigilo .veh-btn-limpiar:hover {
+    background-color: #1e293b;
+    color: #ffffff;
+}

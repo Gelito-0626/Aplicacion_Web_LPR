@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS LPR - Gestión de Usuarios</title>
+    
+    <link rel="stylesheet" href="css/dash-estilos.css">
+    <link rel="stylesheet" href="css/modulos-estilos.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="dash-contenedor-general">
+        
+        <aside class="dash-sidebar">
+            <div class="dash-sidebar-logo">
+                <i data-lucide="shield" class="dash-icono-logo"></i>
+                <span class="dash-texto-logo">AEGIS LPR</span>
+            </div>
+            
+            <nav class="dash-sidebar-menu">
+                <a href="dashboard.html" class="dash-menu-item">
+                    <i data-lucide="layout-dashboard"></i> <span>Inicio</span>
+                </a>
+                <a href="vehiculos.html" class="dash-menu-item">
+                    <i data-lucide="car"></i> <span>Vehículos</span>
+                </a>
+                <a href="usuarios.html" class="dash-menu-item dash-activo">
+                    <i data-lucide="users"></i> <span>Usuarios</span>
+                </a>
+                <a href="historial.html" class="dash-menu-item">
+                    <i data-lucide="history"></i> <span>Historial</span>
+                </a>
+                <button id="dash-btn-modo" class="dash-menu-item" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                    <i data-lucide="moon"></i> <span id="dash-texto-modo">Modo Nocturno</span>
+                </button>
+            </nav>
+
+            <div class="dash-sidebar-pie">
+                <p>AEGIS 2026</p>
+            </div>
+        </aside>
+
+        <div class="dash-contenido-derecha">
+            
+            <header class="dash-navbar">
+                <div class="dash-navbar-titulo">
+                    <h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2>
+                </div>
+                
+                <div class="dash-navbar-info">
+                    <div class="dash-info-tiempo">
+                        <i data-lucide="clock"></i>
+                        <span id="dash-reloj">--:--:--</span>
+                    </div>
+                    
+                    <div class="dash-info-perfil">
+                        <div class="dash-perfil-texto">
+                            <span class="dash-perfil-nombre" id="nombre-operador-nav">Tte. C. Martínez</span>
+                            <span class="dash-perfil-rol">Guardia Responsable</span>
+                        </div>
+                        <div class="dash-perfil-avatar">
+                            <i data-lucide="user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="veh-main-container">
+                
+                <section class="veh-columna-formulario" id="seccion-form-usuario" style="display: none;">
+                    <div class="veh-tarjeta-modulo">
+                        <div class="veh-tarjeta-cabecera">
+                            <i data-lucide="user-plus"></i>
+                            <h3 id="titulo-form-usuario">Registrar Nuevo Usuario</h3>
+                        </div>
+                        
+                        <form id="form-usuario" class="veh-formulario">
+                            <div class="veh-grupo-input">
+                                <label for="usr-carnet">Carnet Militar</label>
+                                <input type="text" id="usr-carnet" placeholder="Ej: FANB-12345" required>
+                            </div>
+                            <div class="veh-grupo-input">
+                                <label for="usr-nombre">Nombre y Apellido</label>
+                                <input type="text" id="usr-nombre" placeholder="Ej: Tte. Carlos Martínez" required>
+                            </div>
+                            <div class="veh-grupo-input">
+                                <label for="usr-correo">Correo Electrónico</label>
+                                <input type="email" id="usr-correo" placeholder="Ej: carlos@seguridad.mil.ve" required>
+                            </div>
+                            <div class="veh-doble-columna">
+                                <div class="veh-grupo-input">
+                                    <label for="usr-rango">Rango Militar</label>
+                                    <select id="usr-rango" required>
+                                        <option value="" disabled selected>Seleccione...</option>
+                                        <option value="Cnel">Cnel - Coronel</option>
+                                        <option value="Tte Coronel">Tte Coronel</option>
+                                        <option value="Mayor">Mayor</option>
+                                        <option value="Cap">Cap - Capitán</option>
+                                        <option value="Tte">Tte - Teniente</option>
+                                        <option value="Sgto">Sgto - Sargento</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="veh-formulario-botones">
+                                <button type="submit" class="veh-btn veh-btn-guardar" id="btn-guardar-usuario">
+                                    <i data-lucide="save"></i> Guardar Usuario
+                                </button>
+                                <button type="button" class="veh-btn veh-btn-limpiar" onclick="cancelarEdicion()">
+                                    <i data-lucide="x"></i> Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="veh-columna-tabla">
+                    <div class="veh-tarjeta-modulo">
+                        <div class="veh-tarjeta-cabecera" style="justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="users"></i>
+                                <h3>Personal Registrado</h3>
+                            </div>
+                            <button onclick="mostrarFormulario()" class="veh-btn veh-btn-guardar" id="btn-nuevo-usuario" style="padding: 8px 14px; font-size: 11px;">
+                                <i data-lucide="plus"></i> Nuevo
+                            </button>
+                        </div>
+                        <div class="veh-tabla-contenedor">
+                            <table class="veh-tabla">
+                                <thead>
+                                    <tr><th>Carnet Militar</th><th>Nombre y Apellido</th><th>Rango</th><th>Correo</th><th>Acciones</th></tr>
+                                </thead>
+                                <tbody id="usr-tabla-body">
+                                    <tr><td colspan="5" style="text-align:center; padding:20px;">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        if (localStorage.getItem("modo-oscuro") === "true") {
+            document.body.classList.add("modo-sigilo");
+        }
+        
+        setInterval(() => {
+            const reloj = document.getElementById('dash-reloj');
+            if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0];
+        }, 1000);
+        const op = localStorage.getItem("operador_nombre");
+        if (op) document.getElementById("nombre-operador-nav").textContent = op;
+
+        const btnModo = document.getElementById('dash-btn-modo');
+        const textoModo = document.getElementById('dash-texto-modo');
+        
+        if (document.body.classList.contains("modo-sigilo")) {
+            textoModo.textContent = "Modo Estándar";
+            btnModo.querySelector('i').setAttribute('data-lucide', 'sun');
+            lucide.createIcons();
+        }
+
+        btnModo.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.body.classList.toggle('modo-sigilo');
+            const activo = document.body.classList.contains('modo-sigilo');
+            localStorage.setItem("modo-oscuro", activo);
+            textoModo.textContent = activo ? "Modo Estándar" : "Modo Nocturno";
+            btnModo.querySelector('i').setAttribute('data-lucide', activo ? 'sun' : 'moon');
+            lucide.createIcons();
+        });
+    </script>
+    <script src="js/usuarios.js"></script>
+</body>
+</html>
