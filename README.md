@@ -1,15 +1,27 @@
-# Sistema LPR - Control Perimetral 
+# 🛡️ AEGIS LPR - Control Perimetral Autónomo
 
-Sistema de Reconocimiento de Matriculas (License Plate Recognition) para control de acceso vehicular en entornos mlitares.
+Sistema de Reconocimiento de Matrículas (License Plate Recognition) para control de acceso vehicular en entornos militares.
 
-## Diagramas de Flujo (2 Procesos Críticos del Sistema)
+## 📸 Modos de Operación
 
-### Proceso 1: Detección Autónoma LPR
+| Modo | Entrada | Tecnología |
+|------|---------|------------|
+| **Automático** | Imagen de placa | YOLOv8 + PyTesseract OCR |
+| **Manual** | Texto ingresado por operador | Validación directa contra BD |
 
+El módulo de cámara en vivo (`agente_lpr.py`) está disponible para entornos con hardware adecuado.
+
+---
+
+## 🔄 Diagramas de Flujo
+
+### Proceso 1: Detección Automática
+
+```mermaid
 flowchart TD
-    inicio1([INICIO]) --> A[Cámara detecta movimiento]
+    inicio1([INICIO]) --> A[Imagen de placa recibida]
     A --> B[YOLOv8 procesa imagen]
-    B --> C[Extrae caracteres de placa]
+    B --> C[PyTesseract extrae caracteres]
     C --> D{Placa en base de datos?}
     
     D -->|SI| E[Verificar horario y dias]
@@ -24,31 +36,36 @@ flowchart TD
     G --> K[Registrar en RegistroAcceso]
     H --> K
     K --> L[WebSocket: Actualizar Dashboard]
-    L --> fin1([FIN])
+    L --> fin1([FIN])  
 
-### Proceso 2: Registro Manual por Contingencia
+```
 
+### Proceso 2: Verificación Manual
+
+```mermaid
 flowchart TD
-    inicio2([INICIO]) --> A[Alerta: Vehiculo desconocido]
-    A --> B[Guardia inspecciona fisicamente]
-    B --> C[Verifica credenciales del conductor]
-    C --> D{Credenciales validas?}
+    inicio2([INICIO]) --> A[Operador ingresa placa manualmente]
+    A --> B[Sistema verifica en base de datos]
+    B --> C{Placa registrada?}
     
-    D -->|SI| E[Registro digital en interfaz]
-    E --> F[Ingresar: Placa, Propietario, Cedula]
-    F --> G[Guardar en base de datos SQLite]
-    G --> H[Vehiculo autorizado para futuro]
+    C -->|SI| D[Verificar horario y dias]
+    D --> E{Dentro del horario?}
+    E -->|SI| F[ACCESO PERMITIDO]
+    E -->|NO| G[ACCESO DENEGADO]
     
-    D -->|NO| I[ACCESO DENEGADO]
-    I --> J[Registrar motivo en bitacora]
+    C -->|NO| H[Registrar como vehiculo desconocido]
+    H --> G
     
-    H --> K[Registro historico con marca de tiempo]
-    J --> K
-    K --> L[Dashboard actualizado]
-    L --> fin2([FIN])
+    F --> I[Registro historico con marca de tiempo]
+    G --> I
+    I --> J[Dashboard actualizado]
+    J --> fin2([FIN])
 
-### Diagrama Entidad - Relación
+```
 
+## 📊 Diagrama Entidad-Relación
+
+```mermaid
 erDiagram
     USUARIO {
         string carnet_militar PK
@@ -81,21 +98,24 @@ erDiagram
 
     VEHICULO ||--o{ REGISTRO_ACCESO : "genera"
 
-### diagrama secuencial
+```
 
+## 🔁 Diagrama de Secuencia
+
+```mermaid
 sequenceDiagram
-    participant Cam as Camara
-    participant IA as YOLOv8 (Agente LPR)
+    participant Img as Imagen/Texto
+    participant IA as YOLOv8 + PyTesseract
     participant API as Backend FastAPI
     participant DB as SQLite
     participant WS as WebSocket
     participant Dash as Dashboard
 
-    Cam->>IA: Envia frame de video
-    IA->>IA: Detecta y extrae caracteres
+    Img->>IA: Imagen o texto de placa
+    IA->>IA: Procesa y extrae caracteres
     
     alt Placa detectada correctamente
-        IA->>API: POST /api/lpr/deteccion
+        IA->>API: POST /api/lpr/procesar-imagen
         API->>DB: SELECT placa FROM vehiculos
         DB-->>API: Datos del vehiculo
         
@@ -110,14 +130,16 @@ sequenceDiagram
         end
         
     else Placa no detectada o ilegible
-        IA->>API: POST /api/lpr/deteccion (vacio)
         API->>WS: Broadcast: ERROR LECTURA
         WS-->>Dash: Alerta: Placa ilegible
         API->>DB: INSERT INTO registro_acceso (error)
     end
 
-### Diagrama de Arquitectura
+```
 
+## 🏗️ Diagrama de Arquitectura
+
+```mermaid
 graph TB
     subgraph Capa_Presentacion["Capa de Presentacion"]
         A[Dashboard HTML/CSS/JS]
@@ -139,15 +161,14 @@ graph TB
     end
     
     subgraph Capa_IA["Capa de Inteligencia Artificial"]
-        K[YOLOv8]
-        L[Camara Web]
+        K[YOLOv8 + PyTesseract]
+        L[Imagen / Texto]
     end
 
-    L -->|Video| K
-    K -->|POST /api/lpr/deteccion| D
+    L -->|POST| D
     A <-->|WebSocket| C
     A -->|HTTP| D
-    B -->|POST /api/usuarios/login| F
+    B -->|POST| F
     
     D --> I
     F --> E
@@ -162,49 +183,34 @@ graph TB
     style Capa_Negocio fill:#1e293b,stroke:#10b981,color:#fff
     style Capa_Datos fill:#1e293b,stroke:#f59e0b,color:#fff
     style Capa_IA fill:#1e293b,stroke:#ef4444,color:#fff
-
-### Diagrama de casos de uso
-
-graph TD
-    actor Guardia
-    actor Admin
     
-    subgraph Sistema["SISTEMA LPR - CONTROL PERIMETRAL"]
-        direction TB
-        
-        subgraph Autenticacion["AUTENTICACION"]
-            usecase UC1[Iniciar Sesion]
-            usecase UC2[Cambiar Contrasena]
-        end
-        
-        subgraph Monitoreo_IA["MONITOREO EN TIEMPO REAL"]
-            usecase UC3[Ver Dashboard]
-            usecase UC4[Monitorear Detecciones]
-        end
-        
-        subgraph Vehiculos["GESTION DE VEHICULOS"]
-            usecase UC5[Registrar Vehiculo]
-            usecase UC6[Editar Vehiculo]
-            usecase UC7[Eliminar Vehiculo]
-        end
-        
-        subgraph Usuarios["GESTION DE USUARIOS"]
-            usecase UC8[Registrar Usuario]
-            usecase UC9[Editar Usuario]
-            usecase UC10[Eliminar Usuario]
-        end
-        
-        subgraph Historial_Reportes["HISTORIAL Y REPORTES"]
-            usecase UC11[Consultar Historial]
-            usecase UC12[Exportar CSV]
-        end
+```
+
+## 👥 Diagrama de Casos de Uso
+
+```mermaid
+graph TD
+    Guardia[Guardia de Turno]
+    Admin[Administrador]
+    
+    subgraph Sistema["SISTEMA LPR"]
+        UC1[Iniciar Sesion]
+        UC2[Cambiar Contrasena]
+        UC3[Ver Dashboard]
+        UC4[Registrar Vehiculo]
+        UC5[Editar Vehiculo]
+        UC6[Eliminar Vehiculo]
+        UC7[Registrar Usuario]
+        UC8[Editar Usuario]
+        UC9[Eliminar Usuario]
+        UC10[Consultar Historial]
+        UC11[Exportar CSV]
     end
 
     Guardia --> UC1
     Guardia --> UC3
     Guardia --> UC4
-    Guardia --> UC5
-    Guardia --> UC11
+    Guardia --> UC10
     Guardia --> UC2
 
     Admin --> UC1
@@ -216,25 +222,24 @@ graph TD
     Admin --> UC8
     Admin --> UC9
     Admin --> UC10
-    Admin --> UC11
     Admin --> UC2
 
     UC3 -.->|include| UC1
-    UC11 -.->|include| UC1
-    
-    UC6 -.->|extend| UC5
-    UC7 -.->|extend| UC5
-    
-    UC9 -.->|extend| UC8
-    UC10 -.->|extend| UC8
-    
-    UC12 -.->|extend| UC11
+    UC10 -.->|include| UC1
+    UC5 -.->|extend| UC4
+    UC6 -.->|extend| UC4
+    UC8 -.->|extend| UC7
+    UC9 -.->|extend| UC7
+    UC11 -.->|extend| UC10
 
-    ## 📚 Documentacion Tecnica
+```
+
+## 📚 Documentacion Tecnica
 
 El proyecto utiliza **Docstrings de Python** para documentación interna. Para generar la documentación técnica automáticamente:
 
 ```bash
+
 # Generar documentación en consola
 python -m pydoc backend_lpr.controllers.acceso_controller
 

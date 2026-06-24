@@ -34,12 +34,23 @@ def test_login_fallido():
 
 
 def test_login_exitoso():
-    """Prueba 4: Login con credenciales correctas devuelve acceso verdadero"""
+    """Prueba 4: Login con credenciales correctas"""
+    # Asegurar que el admin existe en la BD de prueba
+    client.post("/api/usuarios/registro", json={
+        "carnet_militar": "00000000",
+        "nombre_apellido": "Admin Test",
+        "correo_electronico": "comandante@seguridad.mil.ve",
+        "rango": "Cnel",
+        "contrasena": "admin123"
+    })
     response = client.post("/api/usuarios/login", json={
         "correo_electronico": "comandante@seguridad.mil.ve",
         "contrasena": "admin123"
     })
-    assert response.json()["acceso"] == True
+    data = response.json()
+    assert data["acceso"] == True
+    assert "nombre" in data
+    assert "rango" in data
 
 
 def test_listar_vehiculos():
@@ -49,8 +60,12 @@ def test_listar_vehiculos():
     assert "vehiculos" in response.json()
 
 
-def test_historial_accesos():
-    """Prueba 6: El historial de accesos responde correctamente"""
-    response = client.get("/api/lpr/historial")
+def test_procesar_placa_manual():
+    """Prueba 6: Procesar una placa manualmente"""
+    response = client.post("/api/lpr/procesar-imagen", data={
+        "placa_manual": "XYZ999"
+    })
     assert response.status_code == 200
-    assert "registros" in response.json()
+    data = response.json()
+    assert "estado" in data
+    assert "placa" in data
