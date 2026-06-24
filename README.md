@@ -190,45 +190,27 @@ graph TB
 
 ```mermaid
 graph TD
-    actor Guardia
-    actor Admin
+    Guardia[Guardia de Turno]
+    Admin[Administrador]
     
-    subgraph Sistema["SISTEMA LPR - CONTROL PERIMETRAL"]
-        direction TB
-        
-        subgraph Autenticacion["AUTENTICACION"]
-            usecase UC1[Iniciar Sesion]
-            usecase UC2[Cambiar Contrasena]
-        end
-        
-        subgraph Monitoreo_IA["MONITOREO EN TIEMPO REAL"]
-            usecase UC3[Ver Dashboard]
-            usecase UC4[Monitorear Detecciones]
-        end
-        
-        subgraph Vehiculos["GESTION DE VEHICULOS"]
-            usecase UC5[Registrar Vehiculo]
-            usecase UC6[Editar Vehiculo]
-            usecase UC7[Eliminar Vehiculo]
-        end
-        
-        subgraph Usuarios["GESTION DE USUARIOS"]
-            usecase UC8[Registrar Usuario]
-            usecase UC9[Editar Usuario]
-            usecase UC10[Eliminar Usuario]
-        end
-        
-        subgraph Historial_Reportes["HISTORIAL Y REPORTES"]
-            usecase UC11[Consultar Historial]
-            usecase UC12[Exportar CSV]
-        end
+    subgraph Sistema["SISTEMA LPR"]
+        UC1[Iniciar Sesion]
+        UC2[Cambiar Contrasena]
+        UC3[Ver Dashboard]
+        UC4[Registrar Vehiculo]
+        UC5[Editar Vehiculo]
+        UC6[Eliminar Vehiculo]
+        UC7[Registrar Usuario]
+        UC8[Editar Usuario]
+        UC9[Eliminar Usuario]
+        UC10[Consultar Historial]
+        UC11[Exportar CSV]
     end
 
     Guardia --> UC1
     Guardia --> UC3
     Guardia --> UC4
-    Guardia --> UC5
-    Guardia --> UC11
+    Guardia --> UC10
     Guardia --> UC2
 
     Admin --> UC1
@@ -240,19 +222,15 @@ graph TD
     Admin --> UC8
     Admin --> UC9
     Admin --> UC10
-    Admin --> UC11
     Admin --> UC2
 
     UC3 -.->|include| UC1
-    UC11 -.->|include| UC1
-    
-    UC6 -.->|extend| UC5
-    UC7 -.->|extend| UC5
-    
-    UC9 -.->|extend| UC8
-    UC10 -.->|extend| UC8
-    
-    UC12 -.->|extend| UC11
+    UC10 -.->|include| UC1
+    UC5 -.->|extend| UC4
+    UC6 -.->|extend| UC4
+    UC8 -.->|extend| UC7
+    UC9 -.->|extend| UC7
+    UC11 -.->|extend| UC10
 
 ```
 
