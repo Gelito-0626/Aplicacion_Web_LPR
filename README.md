@@ -40,7 +40,7 @@ flowchart TD
 
 ### proceso 2 verificación manual
 
-    flowchart TD
+flowchart TD
     inicio2([INICIO]) --> A[Operador ingresa placa manualmente]
     A --> B[Sistema verifica en base de datos]
     B --> C{Placa registrada?}
@@ -57,7 +57,7 @@ flowchart TD
     G --> I
     I --> J[Dashboard actualizado]
     J --> fin2([FIN])
-
+  
 ### Diagrama Entidad-Relación
 
 erDiagram
@@ -244,6 +244,7 @@ graph TD
 El proyecto utiliza **Docstrings de Python** para documentación interna. Para generar la documentación técnica automáticamente:
 
 ```bash
+
 # Generar documentación en consola
 python -m pydoc backend_lpr.controllers.acceso_controller
 
