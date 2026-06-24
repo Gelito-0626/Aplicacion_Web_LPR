@@ -61,6 +61,7 @@ flowchart TD
     I --> J[Dashboard actualizado]
     J --> fin2([FIN])
 
+```
 
 ## 📊 Diagrama Entidad-Relación
 
@@ -97,7 +98,7 @@ erDiagram
 
     VEHICULO ||--o{ REGISTRO_ACCESO : "genera"
 
----
+```
 
 ## 🔁 Diagrama de Secuencia
 
@@ -134,7 +135,7 @@ sequenceDiagram
         API->>DB: INSERT INTO registro_acceso (error)
     end
 
----
+```
 
 ## 🏗️ Diagrama de Arquitectura
 
@@ -183,8 +184,7 @@ graph TB
     style Capa_Datos fill:#1e293b,stroke:#f59e0b,color:#fff
     style Capa_IA fill:#1e293b,stroke:#ef4444,color:#fff
     
-
----
+```
 
 ## 👥 Diagrama de Casos de Uso
 
@@ -254,9 +254,9 @@ graph TD
     
     UC12 -.->|extend| UC11
 
+```
 
-
-    ## 📚 Documentacion Tecnica
+## 📚 Documentacion Tecnica
 
 El proyecto utiliza **Docstrings de Python** para documentación interna. Para generar la documentación técnica automáticamente:
 
