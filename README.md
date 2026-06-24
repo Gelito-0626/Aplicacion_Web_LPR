@@ -1,15 +1,27 @@
-# Sistema LPR - Control Perimetral 
+# 🛡️ AEGIS LPR - Control Perimetral Autónomo
 
-Sistema de Reconocimiento de Matriculas (License Plate Recognition) para control de acceso vehicular en entornos mlitares.
+Sistema de Reconocimiento de Matrículas (License Plate Recognition) para control de acceso vehicular en entornos militares.
 
-## Diagramas de Flujo (2 Procesos Críticos del Sistema)
+## 📸 Modos de Operación
 
-### Proceso 1: Detección Autónoma LPR
+| Modo | Entrada | Tecnología |
+|------|---------|------------|
+| **Automático** | Imagen de placa | YOLOv8 + PyTesseract OCR |
+| **Manual** | Texto ingresado por operador | Validación directa contra BD |
 
+El módulo de cámara en vivo (`agente_lpr.py`) está disponible para entornos con hardware adecuado.
+
+---
+
+## 🔄 Diagramas de Flujo
+
+### Proceso 1: Detección Automática
+
+```mermaid
 flowchart TD
-    inicio1([INICIO]) --> A[Cámara detecta movimiento]
+    inicio1([INICIO]) --> A[Imagen de placa recibida]
     A --> B[YOLOv8 procesa imagen]
-    B --> C[Extrae caracteres de placa]
+    B --> C[PyTesseract extrae caracteres]
     C --> D{Placa en base de datos?}
     
     D -->|SI| E[Verificar horario y dias]
@@ -26,28 +38,27 @@ flowchart TD
     K --> L[WebSocket: Actualizar Dashboard]
     L --> fin1([FIN])
 
-### Proceso 2: Registro Manual por Contingencia
+### proceso 2 verificación manual
 
-flowchart TD
-    inicio2([INICIO]) --> A[Alerta: Vehiculo desconocido]
-    A --> B[Guardia inspecciona fisicamente]
-    B --> C[Verifica credenciales del conductor]
-    C --> D{Credenciales validas?}
+    flowchart TD
+    inicio2([INICIO]) --> A[Operador ingresa placa manualmente]
+    A --> B[Sistema verifica en base de datos]
+    B --> C{Placa registrada?}
     
-    D -->|SI| E[Registro digital en interfaz]
-    E --> F[Ingresar: Placa, Propietario, Cedula]
-    F --> G[Guardar en base de datos SQLite]
-    G --> H[Vehiculo autorizado para futuro]
+    C -->|SI| D[Verificar horario y dias]
+    D --> E{Dentro del horario?}
+    E -->|SI| F[ACCESO PERMITIDO]
+    E -->|NO| G[ACCESO DENEGADO]
     
-    D -->|NO| I[ACCESO DENEGADO]
-    I --> J[Registrar motivo en bitacora]
+    C -->|NO| H[Registrar como vehiculo desconocido]
+    H --> G
     
-    H --> K[Registro historico con marca de tiempo]
-    J --> K
-    K --> L[Dashboard actualizado]
-    L --> fin2([FIN])
+    F --> I[Registro historico con marca de tiempo]
+    G --> I
+    I --> J[Dashboard actualizado]
+    J --> fin2([FIN])
 
-### Diagrama Entidad - Relación
+### Diagrama Entidad-Relación
 
 erDiagram
     USUARIO {
@@ -81,21 +92,21 @@ erDiagram
 
     VEHICULO ||--o{ REGISTRO_ACCESO : "genera"
 
-### diagrama secuencial
+    ### Diagrama de Secuencia
 
-sequenceDiagram
-    participant Cam as Camara
-    participant IA as YOLOv8 (Agente LPR)
+    sequenceDiagram
+    participant Img as Imagen/Texto
+    participant IA as YOLOv8 + PyTesseract
     participant API as Backend FastAPI
     participant DB as SQLite
     participant WS as WebSocket
     participant Dash as Dashboard
 
-    Cam->>IA: Envia frame de video
-    IA->>IA: Detecta y extrae caracteres
+    Img->>IA: Imagen o texto de placa
+    IA->>IA: Procesa y extrae caracteres
     
     alt Placa detectada correctamente
-        IA->>API: POST /api/lpr/deteccion
+        IA->>API: POST /api/lpr/procesar-imagen
         API->>DB: SELECT placa FROM vehiculos
         DB-->>API: Datos del vehiculo
         
@@ -110,15 +121,14 @@ sequenceDiagram
         end
         
     else Placa no detectada o ilegible
-        IA->>API: POST /api/lpr/deteccion (vacio)
         API->>WS: Broadcast: ERROR LECTURA
         WS-->>Dash: Alerta: Placa ilegible
         API->>DB: INSERT INTO registro_acceso (error)
     end
 
-### Diagrama de Arquitectura
+    ### Diagrama de Arquitectura
 
-graph TB
+    graph TB
     subgraph Capa_Presentacion["Capa de Presentacion"]
         A[Dashboard HTML/CSS/JS]
         B[Login]
@@ -139,15 +149,14 @@ graph TB
     end
     
     subgraph Capa_IA["Capa de Inteligencia Artificial"]
-        K[YOLOv8]
-        L[Camara Web]
+        K[YOLOv8 + PyTesseract]
+        L[Imagen / Texto]
     end
 
-    L -->|Video| K
-    K -->|POST /api/lpr/deteccion| D
+    L -->|POST| D
     A <-->|WebSocket| C
     A -->|HTTP| D
-    B -->|POST /api/usuarios/login| F
+    B -->|POST| F
     
     D --> I
     F --> E
@@ -163,7 +172,7 @@ graph TB
     style Capa_Datos fill:#1e293b,stroke:#f59e0b,color:#fff
     style Capa_IA fill:#1e293b,stroke:#ef4444,color:#fff
 
-### Diagrama de casos de uso
+    ### Diagrama de casos de uso
 
 graph TD
     actor Guardia
