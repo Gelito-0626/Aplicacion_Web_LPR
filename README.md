@@ -38,9 +38,9 @@ flowchart TD
     K --> L[WebSocket: Actualizar Dashboard]
     L --> fin1([FIN])
 
-### proceso 2 verificación manual
+    ### Proceso 2: Verificación Manual
 
-flowchart TD
+    flowchart TD
     inicio2([INICIO]) --> A[Operador ingresa placa manualmente]
     A --> B[Sistema verifica en base de datos]
     B --> C{Placa registrada?}
@@ -57,10 +57,10 @@ flowchart TD
     G --> I
     I --> J[Dashboard actualizado]
     J --> fin2([FIN])
-  
-### Diagrama Entidad-Relación
 
-erDiagram
+    ### Diagrama Entidad-Relación
+
+    erDiagram
     USUARIO {
         string carnet_militar PK
         string nombre_apellido
@@ -171,73 +171,6 @@ erDiagram
     style Capa_Negocio fill:#1e293b,stroke:#10b981,color:#fff
     style Capa_Datos fill:#1e293b,stroke:#f59e0b,color:#fff
     style Capa_IA fill:#1e293b,stroke:#ef4444,color:#fff
-
-    ### Diagrama de casos de uso
-
-graph TD
-    actor Guardia
-    actor Admin
-    
-    subgraph Sistema["SISTEMA LPR - CONTROL PERIMETRAL"]
-        direction TB
-        
-        subgraph Autenticacion["AUTENTICACION"]
-            usecase UC1[Iniciar Sesion]
-            usecase UC2[Cambiar Contrasena]
-        end
-        
-        subgraph Monitoreo_IA["MONITOREO EN TIEMPO REAL"]
-            usecase UC3[Ver Dashboard]
-            usecase UC4[Monitorear Detecciones]
-        end
-        
-        subgraph Vehiculos["GESTION DE VEHICULOS"]
-            usecase UC5[Registrar Vehiculo]
-            usecase UC6[Editar Vehiculo]
-            usecase UC7[Eliminar Vehiculo]
-        end
-        
-        subgraph Usuarios["GESTION DE USUARIOS"]
-            usecase UC8[Registrar Usuario]
-            usecase UC9[Editar Usuario]
-            usecase UC10[Eliminar Usuario]
-        end
-        
-        subgraph Historial_Reportes["HISTORIAL Y REPORTES"]
-            usecase UC11[Consultar Historial]
-            usecase UC12[Exportar CSV]
-        end
-    end
-
-    Guardia --> UC1
-    Guardia --> UC3
-    Guardia --> UC4
-    Guardia --> UC5
-    Guardia --> UC11
-    Guardia --> UC2
-
-    Admin --> UC1
-    Admin --> UC3
-    Admin --> UC4
-    Admin --> UC5
-    Admin --> UC6
-    Admin --> UC7
-    Admin --> UC8
-    Admin --> UC9
-    Admin --> UC10
-    Admin --> UC11
-    Admin --> UC2
-
-    UC3 -.->|include| UC1
-    UC11 -.->|include| UC1
-    
-    UC6 -.->|extend| UC5
-    UC7 -.->|extend| UC5
-    
-    UC9 -.->|extend| UC8
-    UC10 -.->|extend| UC8
-    
-    UC12 -.->|extend| UC11
 
     ## 📚 Documentacion Tecnica
 
