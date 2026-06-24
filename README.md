@@ -38,7 +38,7 @@ flowchart TD
     K --> L[WebSocket: Actualizar Dashboard]
     L --> fin1([FIN])  
 
-    ```
+```
 
 ### Proceso 2: Verificación Manual
 
