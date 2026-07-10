@@ -2,20 +2,15 @@ FROM python:3.11
 
 WORKDIR /app
 
-# python:3.11 (sin slim) ya trae muchas herramientas
-# Solo instalar lo mínimo adicional
-RUN apt-get update --fix-missing 2>/dev/null || true && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
     tesseract-ocr \
     curl \
-    2>/dev/null || true
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-
-# Quitar Pillow del requirements si sigue fallando
-RUN pip install --no-cache-dir fastapi uvicorn[standard] sqlalchemy pydantic python-multipart requests websockets python-jose passlib[bcrypt] python-dotenv opencv-python-headless pytesseract Pillow ultralytics
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
