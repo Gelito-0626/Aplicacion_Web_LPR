@@ -1,24 +1,21 @@
-FROM python:3.12-slim
+FROM python:3.11
 
 WORKDIR /app
 
-# Instalar solo lo necesario
-RUN apt-get update && apt-get install -y \
+# python:3.11 (sin slim) ya trae muchas herramientas
+# Solo instalar lo mínimo adicional
+RUN apt-get update --fix-missing 2>/dev/null || true && \
+    apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
     tesseract-ocr \
     curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Instalar idioma español para Tesseract (descarga directa)
-RUN apt-get update && apt-get install -y wget && \
-    wget -O /usr/share/tesseract-ocr/5/tessdata/spa.traineddata \
-    https://github.com/tesseract-ocr/tessdata/raw/main/spa.traineddata \
-    2>/dev/null || true && \
-    apt-get remove -y wget && rm -rf /var/lib/apt/lists/*
+    2>/dev/null || true
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Quitar Pillow del requirements si sigue fallando
+RUN pip install --no-cache-dir fastapi uvicorn[standard] sqlalchemy pydantic python-multipart requests websockets python-jose passlib[bcrypt] python-dotenv opencv-python-headless pytesseract Pillow ultralytics
 
 COPY . .
 
