@@ -56,7 +56,7 @@
                         <span id="dash-reloj">--:--:--</span>
                     </div>
                     
-                    <div class="dash-info-perfil">
+                    <div class="dash-info-perfil" onclick="abrirPanel()" style="cursor:pointer;">
                         <div class="dash-perfil-texto">
                             <span class="dash-perfil-nombre" id="nombre-operador-nav">Tte. C. Martínez</span>
                             <span class="dash-perfil-rol">Guardia Responsable</span>
@@ -144,6 +144,32 @@
         </div>
     </div>
 
+    <!-- Panel de Perfil -->
+    <div id="overlay-panel" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:900;" onclick="cerrarPanel()"></div>
+    <div id="panel-perfil" style="position:fixed; top:0; right:-380px; width:380px; height:100%; background:#1e293b; border-left:1px solid #334155; z-index:1000; transition:right 0.3s cubic-bezier(0.4,0,0.2,1); padding:30px 24px; display:flex; flex-direction:column; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+            <h3 style="font-size:14px; font-weight:800; letter-spacing:0.5px; color:#f1f5f9;">👤 PERFIL DEL OPERADOR</h3>
+            <button onclick="cerrarPanel()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:20px;">✕</button>
+        </div>
+        <div style="background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Nombre y Apellido</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-nombre">---</p></div>
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Rango Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-rango">---</p></div>
+            <div><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Carnet Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9; font-family:monospace;" id="panel-carnet">---</p></div>
+        </div>
+        <button onclick="mostrarFormClave()" id="btn-cambiar-clave" style="background:transparent; border:1px solid #334155; color:#e2e8f0; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; margin-bottom:24px; display:flex; align-items:center; gap:10px; width:100%;"><i data-lucide="lock"></i> Cambiar Contraseña</button>
+        <div id="form-cambiar-clave" style="display:none; background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
+            <h4 style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:16px; text-transform:uppercase;">🔒 NUEVA CONTRASEÑA</h4>
+            <div style="margin-bottom:12px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Nueva Contraseña</label><input type="password" id="input-nueva-clave" placeholder="Mínimo 4 caracteres" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
+            <div style="margin-bottom:16px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Confirmar Contraseña</label><input type="password" id="input-confirmar-clave" placeholder="Repita la contraseña" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
+            <div style="display:flex; gap:8px;">
+                <button onclick="cambiarContrasena()" style="flex:1; background:#2563eb; color:white; border:none; padding:12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">ACTUALIZAR</button>
+                <button onclick="cancelarFormClave()" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:12px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">CANCELAR</button>
+            </div>
+            <p id="msg-clave" style="text-align:center; margin-top:10px; font-size:11px; font-weight:600; display:none;"></p>
+        </div>
+        <a href="login.html" onclick="localStorage.clear()" style="background:transparent; border:1px solid rgba(239,68,68,0.3); color:#ef4444; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;"><i data-lucide="log-out"></i> Cerrar Sesión</a>
+    </div>
+
     <script>
         lucide.createIcons();
         
@@ -176,6 +202,19 @@
             btnModo.querySelector('i').setAttribute('data-lucide', activo ? 'sun' : 'moon');
             lucide.createIcons();
         });
+
+        function abrirPanel() { document.getElementById("panel-perfil").style.right="0"; document.getElementById("overlay-panel").style.display="block"; document.getElementById("panel-nombre").textContent=localStorage.getItem("operador_nombre")||"---"; document.getElementById("panel-rango").textContent=localStorage.getItem("operador_rango")||"---"; document.getElementById("panel-carnet").textContent=localStorage.getItem("operador_carnet")||"---"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; lucide.createIcons(); }
+        function cerrarPanel() { document.getElementById("panel-perfil").style.right="-380px"; document.getElementById("overlay-panel").style.display="none"; }
+        function mostrarFormClave() { document.getElementById("btn-cambiar-clave").style.display="none"; document.getElementById("form-cambiar-clave").style.display="block"; }
+        function cancelarFormClave() { document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; }
+        function cambiarContrasena() {
+            const nueva = document.getElementById("input-nueva-clave").value, confirmar = document.getElementById("input-confirmar-clave").value, msg = document.getElementById("msg-clave");
+            if (!nueva || nueva.length < 4) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ Mínimo 4 caracteres."; return; }
+            if (nueva !== confirmar) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ No coinciden."; return; }
+            const carnet = localStorage.getItem("operador_carnet");
+            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({carnet_militar:carnet,nombre_apellido:localStorage.getItem("operador_nombre"),correo_electronico:"",rango:localStorage.getItem("operador_rango"),contrasena:nueva}) })
+            .then(r => r.json()).then(data => { msg.style.display="block"; msg.textContent = data.actualizado ? "✅ Contraseña actualizada." : "❌ Error."; msg.style.color = data.actualizado ? "#10b981" : "#ef4444"; });
+        }
     </script>
     <script src="js/usuarios.js"></script>
 </body>

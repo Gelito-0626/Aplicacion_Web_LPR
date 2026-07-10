@@ -1,6 +1,17 @@
 /* ==========================================================================
-   CONFIGURACIÓN GLOBAL
+   CONFIGURACIÓN GLOBAL Y VARIABLES TÁCTICAS
    ========================================================================== */
+:root {
+    --bg-main: #020617;
+    --card-bg: rgba(6, 11, 25, 0.75);
+    --border-color: rgba(51, 65, 85, 0.45);
+    --neon-blue: #2563eb;
+    --neon-cyan: #06b6d4;
+    --text-primary: #f8fafc;
+    --text-muted: #475569;
+    --radar-color: rgba(6, 182, 212, 0.03);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -8,15 +19,16 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f172a;
-    overflow-x: hidden;
+    font-family: 'Figtree', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    overflow: hidden;
+    font-weight: 400;
+    letter-spacing: -0.01em;
 }
 
 /* ==========================================================================
-   MÓDULO DE AUTENTICACIÓN INTERACTIVO (Prefijo: auth-)
+   FONDO: ESCANEO DE RADAR PERIMETRAL ACTIVO
    ========================================================================== */
-
 .auth-contenedor-principal {
     min-height: 100vh;
     width: 100%;
@@ -24,18 +36,82 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    background: #020617;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Círculos concéntricos del radar */
+.auth-contenedor-principal::before {
+    content: '';
+    position: absolute;
+    width: 160vh;
+    height: 160vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: 
+        repeating-radial-gradient(circle, transparent, transparent 40px, var(--radar-color) 41px, var(--radar-color) 42px),
+        linear-gradient(rgba(255, 255, 255, 0.003) 1px, transparent 1px) 0 0 / 50px 50px,
+        linear-gradient(90deg, rgba(255, 255, 255, 0.003) 1px, transparent 1px) 0 0 / 50px 50px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Haz de luz giratorio del radar perimetral */
+.auth-contenedor-principal::after {
+    content: '';
+    position: absolute;
+    width: 200vh;
+    height: 200vh;
+    top: 50%;
+    left: 50%;
+    background: conic-gradient(from 0deg, rgba(6, 182, 212, 0.12) 0deg, rgba(6, 182, 212, 0.05) 40deg, transparent 120deg);
+    animation: auth-radar-barrido 12s linear infinite;
+    transform-origin: center center;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   TARJETA DE ACCESOS BLINDADA
+   ========================================================================== */
 .auth-tarjeta {
     width: 100%;
-    max-width: 420px;
-    background-color: rgba(30, 41, 59, 0.9);
-    backdrop-filter: blur(8px); /* Efecto esmerilado de interfaz técnica */
-    border: 1px solid #334155;
-    border-radius: 16px;
-    padding: 36px 32px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    max-width: 400px; /* Un poco más compacta y estilizada */
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px 32px;
+    box-shadow: 
+        0 25px 60px -15px rgba(0, 0, 0, 0.95),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+    z-index: 10;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Línea superior táctica activa */
+.auth-tarjeta::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan), var(--neon-blue));
+    background-size: 200% auto;
+    animation: auth-linea-flujo 4s linear infinite;
+}
+
+.auth-tarjeta:hover {
+    border-color: rgba(6, 182, 212, 0.35);
+    box-shadow: 
+        0 30px 70px -10px rgba(0, 0, 0, 0.98),
+        0 0 40px rgba(6, 182, 212, 0.05);
 }
 
 .auth-encabezado {
@@ -43,68 +119,100 @@ body {
     margin-bottom: 32px;
 }
 
+/* ==========================================================================
+   LOGO: MIRA HOLOGRÁFICA DE CONTROL (TARGET LOCK)
+   ========================================================================== */
 .auth-logo-militar {
-    width: 64px;
-    height: 64px;
-    background-color: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(59, 130, 246, 0.4);
-    border-radius: 50%;
+    width: 76px;
+    height: 76px;
+    background: rgba(2, 6, 23, 0.9);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 50%; /* Circular tipo mira */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px auto;
-    animation: auth-pulso infinite 2s ease-in-out;
-    transition: all 0.3s ease;
+    margin: 0 auto 20px auto;
+    position: relative;
+    padding: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reacción interactiva del escudo táctico */
+/* Esquinas de fijación perimetral de la mira */
+.auth-logo-militar::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    padding: 2px;
+    background: conic-gradient(from 45deg, var(--neon-cyan) 20deg, transparent 20deg 90deg, var(--neon-cyan) 90deg 110deg, transparent 110deg 180deg, var(--neon-cyan) 180deg 200deg, transparent 200deg 270deg, var(--neon-cyan) 270deg 290deg, transparent 290deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: auth-mira-rotar 8s linear infinite;
+}
+
 .auth-tarjeta:hover .auth-logo-militar {
-    border-color: #3b82f6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    transform: scale(1.05);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.2);
 }
 
+.auth-logo-militar svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 6px var(--neon-cyan));
+    animation: auth-frecuencia 2s ease-in-out infinite;
+}
+
+/* Color interno del escudo/mira */
 .auth-icono-escudo {
-    color: #3b82f6;
-    width: 32px;
-    height: 32px;
+    color: var(--neon-cyan) !important;
 }
 
+/* ==========================================================================
+   INTERFAZ DE CAMPOS Y BOTONES
+   ========================================================================== */
 .auth-titulo-sistema {
-    font-size: 18px;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: 1px;
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
 .auth-subtitulo-unidad {
     font-size: 10px;
-    font-weight: 600;
-    color: #94a3b8;
+    font-weight: 700;
+    color: var(--neon-cyan);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 4px;
     margin-top: 6px;
+    text-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
 }
 
 #auth-formulario {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 20px;
 }
 
 .auth-grupo-campo {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     width: 100%;
 }
 
 .auth-label-campo {
     text-transform: uppercase;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    color: #94a3b8;
-    letter-spacing: 0.8px;
-    transition: color 0.3s ease;
+    color: #57657a;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    margin-left: 2px;
 }
 
 .auth-input-contenedor {
@@ -114,172 +222,139 @@ body {
 
 .auth-icono-input {
     position: absolute;
-    left: 12px;
+    left: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #64748b;
-    width: 18px;
-    height: 18px;
+    color: #475569;
+    width: 16px;
+    height: 16px;
     transition: all 0.3s ease;
     z-index: 2;
 }
 
 .auth-input-control {
     width: 100%;
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    color: #ffffff;
+    background-color: rgba(2, 6, 23, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     border-radius: 12px;
-    padding: 12px 16px 12px 40px;
+    padding: 14px 16px 14px 44px;
     font-size: 14px;
+    font-weight: 500;
     outline: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
 }
 
 .auth-input-control::placeholder {
-    color: #475569;
+    color: #334155;
 }
 
-/* Barra Táctica Inferior */
 .auth-linea-activa {
     position: absolute;
     bottom: 0;
     left: 50%;
     width: 0;
     height: 2px;
-    background-color: #3b82f6;
-    transition: all 0.3s ease;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-50%);
     z-index: 3;
 }
 
-/* Micro-interacciones cuando el usuario se enfoca en el campo */
 .auth-input-control:focus {
-    border-color: #475569;
-    background-color: #0b1120;
-    transform: translateY(-1px);
+    border-color: rgba(6, 182, 212, 0.5);
+    background-color: #020617;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.08);
 }
 
 .auth-input-control:focus ~ .auth-linea-activa {
     width: 100%;
+    border-radius: 0 0 12px 12px;
 }
 
 .auth-input-control:focus ~ .auth-icono-input {
-    color: #3b82f6;
-    transform: translateY(-50%) scale(1.1);
+    color: var(--neon-cyan);
+    filter: drop-shadow(0 0 4px var(--neon-cyan));
 }
 
 .auth-grupo-campo:focus-within .auth-label-campo {
-    color: #3b82f6;
+    color: var(--neon-cyan);
 }
 
-/* Botón de Entrada Profesional */
+/* BOTÓN DE ENTRADA TÁCTICA */
 .auth-boton-ingresar {
     width: 100%;
-    background-color: #2563eb;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #06b6d4 100%);
+    background-size: 200% auto;
     color: #ffffff;
     font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 14px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 15px;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
 }
 
 .auth-boton-ingresar:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.4);
+    background-position: right center;
+    transform: translateY(-1px);
+    box-shadow: 
+        0 8px 25px rgba(6, 182, 212, 0.35);
 }
 
-.auth-boton-ingresar:active {
-    transform: translateY(0);
-}
-
-/* Bloque Interactivo de "Registrarse" */
-.auth-opciones-registro {
-    text-align: center;
-    margin-top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.auth-texto-registro {
-    font-size: 12px;
-    color: #64748b;
-}
-
-.auth-enlace-registro {
-    font-size: 12px;
-    font-weight: 700;
-    color: #3b82f6;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-    padding: 6px;
-    border-radius: 6px;
-}
-
-.auth-icono-enlace {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.2s ease;
-}
-
-.auth-enlace-registro:hover {
-    color: #60a5fa;
-    background-color: rgba(59, 130, 246, 0.08);
-}
-
-.auth-enlace-registro:hover .auth-icono-enlace {
-    transform: scale(1.15) cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Pie de Tarjeta */
 .auth-pie-tarjeta {
     text-align: center;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(51, 65, 85, 0.4);
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(51, 65, 85, 0.2);
 }
 
 .auth-pie-tarjeta p {
     font-size: 10px;
-    font-weight: 500;
-    color: #475569;
-    letter-spacing: 0.8px;
+    font-weight: 600;
+    color: #334155;
+    letter-spacing: 1.5px;
 }
 
 /* ==========================================================================
-   ANIMACIONES EN CASCADA
+   ANIMACIONES DE BARRIDO Y RADAR (HUD)
    ========================================================================== */
-@keyframes auth-pulso {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.9; }
+@keyframes auth-radar-barrido {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes auth-mira-rotar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes auth-frecuencia {
+    0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 6px var(--neon-cyan)); }
+    50% { transform: scale(0.96); opacity: 0.8; filter: drop-shadow(0 0 3px var(--neon-cyan)); }
+}
+
+@keyframes auth-linea-flujo {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 @keyframes auth-entrada-suave {
-    from { 
-        opacity: 0; 
-        transform: translateY(12px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.auth-anim-1 { animation: auth-entrada-suave 0.5s ease-out 0.0s both; }
-.auth-anim-2 { animation: auth-entrada-suave 0.5s ease-out 0.1s both; }
-.auth-anim-3 { animation: auth-entrada-suave 0.5s ease-out 0.2s both; }
-.auth-anim-4 { animation: auth-entrada-suave 0.5s ease-out 0.3s both; }
-.auth-anim-5 { animation: auth-entrada-suave 0.5s ease-out 0.4s both; }
-.auth-anim-6 { animation: auth-entrada-suave 0.5s ease-out 0.5s both; }
+.auth-anim-1 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.0s both; }
+.auth-anim-2 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+.auth-anim-3 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.auth-anim-4 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+.auth-anim-5 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+.auth-anim-6 { animation: auth-entrada-suave 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }

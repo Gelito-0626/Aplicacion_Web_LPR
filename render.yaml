@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: aegis-lpr
+    env: docker
+    region: ohio
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./data/lpr.db
+      - key: ENVIRONMENT
+        value: production

@@ -1,9 +1,17 @@
-echo fastapi==0.104.1 > requirements.txt
-echo uvicorn[standard]==0.24.0 >> requirements.txt
-echo sqlalchemy==2.0.23 >> requirements.txt
-echo pydantic==2.5.0 >> requirements.txt
-echo requests==2.31.0 >> requirements.txt
-echo opencv-python==4.8.1.78 >> requirements.txt
-echo ultralytics==8.0.200 >> requirements.txt
-echo watchfiles==0.21.0 >> requirements.txt
-echo python-multipart==0.0.6 >> requirements.txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+pydantic==2.5.0
+pydantic[email]
+email-validator
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+requests==2.31.0
+opencv-python-headless==4.8.1.78
+ultralytics==8.0.200
+pytesseract==0.3.13
+Pillow==10.0.0
+watchfiles==0.21.0
+pytest==7.4.0
+httpx==0.25.0

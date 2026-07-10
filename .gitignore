@@ -1,4 +1,3 @@
-mi git ignore debería verse así no?:
 # Caché de Python
 __pycache__/
 *.pyc
@@ -14,8 +13,17 @@ env/
 .env
 *.db
 *.sqlite
+data/
 
 # Configuración local del Editor (VS Code)
 .vscode/
 .idea/
 *.suo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Imágenes de prueba
+*.jpg
+*.png

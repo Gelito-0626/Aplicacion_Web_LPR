@@ -1,5 +1,5 @@
 # main.py
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import os
 import hashlib
+import asyncio
 
-# 📂 IMPORTACIONES LOGÍSTICAS (CORREGIDO: backend_lpr)
 from backend_lpr.config import engine, get_db, SessionLocal
 from backend_lpr.models import tablas
 from backend_lpr.models.tablas import Usuario
@@ -18,12 +18,10 @@ from backend_lpr.controllers.auth_controller import router as auth_router
 from backend_lpr.controllers.vehiculo_controller import router as vehiculo_router
 from backend_lpr.controllers.usuario_controller import router as usuario_router
 
-# --- 1. Inicialización y creación automática de las tablas SQLite ---
 print("🔧 Inicializando base de datos...")
 tablas.Base.metadata.create_all(bind=engine)
 print("✅ Base de datos lista")
 
-# --- Crear admin por defecto (con hash de seguridad) ---
 db_admin = SessionLocal()
 existe = db_admin.query(Usuario).filter_by(carnet_militar="00000000").first()
 if not existe:
@@ -39,101 +37,56 @@ if not existe:
     print("✅ Usuario administrador creado: comandante@seguridad.mil.ve / admin123")
 db_admin.close()
 
-# --- 2. Inicialización de la Aplicación FastAPI ---
 app = FastAPI(
     title="Aplicación Web LPR de Control Perimetral Autónomo",
-    description="""
-    ## Sistema de Reconocimiento de Matrículas (LPR)
-    
-    ### Funcionalidades:
-    * **Detección en tiempo real** de placas vehiculares mediante IA.
-    * **Validación automática** de permisos de acceso institucional.
-    * **Monitoreo por WebSocket** para alertas instantáneas en el Dashboard.
-    * **Gestión de vehículos** (CRUD completo) autorizados y bloqueados.
-    * **Control horario** estricto por días y horas permitidas.
-    """,
+    description="Sistema de Reconocimiento de Matrículas (LPR)",
     version="2.0.0"
 )
 
-# --- 3. Middleware de CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
     expose_headers=["*"],
 )
 
-# --- 4. Incluir los routers del proyecto ---
 app.include_router(auth_router)
 app.include_router(vehiculo_router)
 app.include_router(acceso_router)
 app.include_router(usuario_router)
 
-print("📋 Routers cargados exitosamente:")
-print("   - Auth Controller: /api/usuarios/*")
-print("   - Vehículo Controller: /api/vehiculos/*")
-print("   - Acceso Controller: /api/lpr/*")
-print("   - Usuario Controller: /api/usuarios/*")
-
-# --- 5. Servir archivos estáticos del frontend ---
 FRONTEND_DIR = "fronted_lpr"
-
 if os.path.exists(FRONTEND_DIR):
     app.mount("/frontend", StaticFiles(directory=FRONTEND_DIR), name="frontend")
-    print(f"🌐 Frontend disponible en: http://localhost:8000/frontend/dashboard.html")
-else:
-    print(f"⚠️ Alerta: No se detectó la carpeta '{FRONTEND_DIR}' en el directorio raíz.")
 
-# --- 6. WebSocket MANAGER ---
 class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
-        self.connection_count = 0
     
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        self.connection_count += 1
-        print(f"🔗 Cliente conectado al Dashboard (Total: {len(self.active_connections)})")
-        
-        await websocket.send_json({
-            "tipo": "conexion",
-            "mensaje": "✅ Conectado al sistema de monitoreo LPR",
-            "timestamp": datetime.now().isoformat(),
-            "clientes_conectados": len(self.active_connections)
-        })
+        print(f"🔗 Cliente conectado (Total: {len(self.active_connections)})")
     
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-            print(f"🔌 Cliente desconectado del Dashboard (Total: {len(self.active_connections)})")
+            print(f"🔌 Cliente desconectado (Total: {len(self.active_connections)})")
     
     async def broadcast(self, message: dict):
         desconectados = []
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
-            except Exception as e:
-                print(f"⚠️ Error enviando datos a la interfaz: {e}")
+            except Exception:
                 desconectados.append(connection)
-        
         for conn in desconectados:
             self.disconnect(conn)
-    
-    async def broadcast_alert(self, tipo: str, datos: dict):
-        alerta = {
-            "tipo": "alerta",
-            "subtipo": tipo,
-            "timestamp": datetime.now().isoformat(),
-            "datos": datos
-        }
-        await self.broadcast(alerta)
 
 manager = ConnectionManager()
 
-# --- 7. ENDPOINT WebSocket para Monitoreo en Tiempo Real ---
 @app.websocket("/ws/monitoreo")
 async def websocket_monitoreo(websocket: WebSocket):
     await manager.connect(websocket)
@@ -141,114 +94,74 @@ async def websocket_monitoreo(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             if data == "ping":
-                await websocket.send_json({
-                    "tipo": "pong",
-                    "timestamp": datetime.now().isoformat()
-                })
+                await websocket.send_json({"tipo": "pong"})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        print("👋 Cliente cerró el Dashboard voluntariamente")
-    except Exception as e:
-        print(f"❌ Error en canal WebSocket: {e}")
+    except Exception:
         manager.disconnect(websocket)
 
-# --- 8. ENDPOINT PARA LA IA ---
 @app.post("/api/lpr/deteccion", tags=["Módulo de Inteligencia Artificial"])
-async def recibir_deteccion_ia(
-    datos: DeteccionPlacaInput,
+async def recibir_deteccion_ia(datos: DeteccionPlacaInput, db: Session = Depends(get_db)):
+    try:
+        resultado = procesar_deteccion_placa(datos, db)
+        await manager.broadcast({
+            "tipo": "nueva_deteccion",
+            "placa": resultado.get("placa"),
+            "estado": resultado.get("estado"),
+            "propietario": resultado.get("propietario"),
+            "detalles": resultado.get("detalles"),
+            "timestamp": datetime.now().isoformat()
+        })
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.post("/api/lpr/procesar-manual-broadcast", tags=["Módulo de Control"])
+async def procesar_manual_broadcast(
+    placa_manual: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    try:
-        print(f"📸 Lectura de cámara recibida: {datos.placa} (Confianza: {datos.confianza or 'N/A'})")
-        
-        resultado = procesar_deteccion_placa(datos, db)
-        
-        await manager.broadcast_alert(
-            tipo="deteccion_placa",
-            datos=resultado
-        )
-        
-        estado = resultado.get("estado", "DESCONOCIDO")
-        placa = resultado.get("placa", "???")
-        propietario = resultado.get("propietario", "Desconocido")
-        
-        if estado == "PERMITIDO":
-            print(f"✅ CONTROL PERIMETRAL - ACCESO PERMITIDO: {placa} - {propietario}")
-        else:
-            print(f"⛔ CONTROL PERIMETRAL - ACCESO DENEGADO: {placa} - {resultado.get('mensaje', 'Sin motivo')}")
-        
-        return resultado
-        
-    except Exception as e:
-        print(f"❌ Error procesando detección: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error en el servidor LPR: {str(e)}"
-        )
+    datos = DeteccionPlacaInput(placa=placa_manual, timestamp=datetime.now(), confianza=1.0, origen="manual")
+    resultado = procesar_deteccion_placa(datos, db)
+    
+    await asyncio.sleep(0.1)
+    await manager.broadcast({
+        "tipo": "nueva_deteccion",
+        "placa": resultado.get("placa"),
+        "estado": resultado.get("estado"),
+        "propietario": resultado.get("propietario"),
+        "detalles": resultado.get("detalles"),
+        "timestamp": datetime.now().isoformat()
+    })
+    
+    return resultado
 
-# --- 9. RUTAS DE DIAGNÓSTICO ---
 @app.get("/", tags=["Diagnóstico"])
 def verificar_servidor():
-    return {
-        "status": "🟢 Servidor backend operativo",
-        "sistema": "Control Perimetral LPR",
-        "version": "2.0.0",
-        "timestamp": datetime.now().isoformat(),
-        "clientes_conectados": len(manager.active_connections)
-    }
+    return {"status": "🟢 Servidor backend operativo", "sistema": "Control Perimetral LPR", "version": "2.0.0"}
 
 @app.get("/health", tags=["Diagnóstico"])
 def health_check():
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "database": "connected",
-        "clientes_websocket": len(manager.active_connections),
-        "uptime": "running"
-    }
+    return {"status": "healthy", "database": "connected"}
 
 @app.get("/status", tags=["Diagnóstico"])
 def system_status():
-    return {
-        "servidor": {"estado": "activo", "version": "2.0.0"},
-        "base_datos": {"estado": "conectada", "tipo": "SQLite", "archivo": "database.db"},
-        "websocket": {"clientes_conectados": len(manager.active_connections)},
-        "frontend": {"disponible": os.path.exists(FRONTEND_DIR)}
-    }
+    return {"servidor": "activo", "websocket": len(manager.active_connections)}
 
-# --- 10. REDIRECCIÓN AL DASHBOARD ---
 @app.get("/dashboard", tags=["Navegación"])
 async def redirigir_dashboard():
     target = os.path.join(FRONTEND_DIR, "dashboard.html")
-    if os.path.exists(target):
-        return FileResponse(target)
-    return {"error": f"Archivo visual no encontrado en la ruta '{target}'"}
+    if os.path.exists(target): return FileResponse(target)
+    return {"error": "Dashboard no encontrado"}
 
-# --- 11. MANEJO DE EVENTOS ---
 @app.on_event("startup")
 async def startup_event():
-    print("=" * 60)
-    print("🚀 SISTEMA DE MONITOREO LPR DESPLEGADO CON ÉXITO")
-    print("=" * 60)
-    print(f"📚 Documentación interactiva API: http://localhost:8000/docs")
-    print(f"🖥️  Acceso directo al Dashboard:   http://localhost:8000/frontend/dashboard.html")
-    print("=" * 60)
+    print("🚀 SISTEMA LPR DESPLEGADO")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    print("\n" + "=" * 60)
-    print("🛑 DETENIENDO SERVICIOS DE CONTROL PERIMETRAL")
-    print(f"👥 Conexiones websocket cerradas de forma limpia: {len(manager.active_connections)}")
-    print("=" * 60)
+    print("🛑 SISTEMA DETENIDO")
 
-# --- 12. EJECUCIÓN DEL SERVIDOR ---
 if __name__ == "__main__":
     import uvicorn
-    print("🔥 Levantando entorno local...")
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

@@ -4,40 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEGIS LPR - Dashboard Principal</title>
-    
     <link rel="stylesheet" href="css/dash-estilos.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
+        
+        .alarma-activa {
+            animation: alarmaParpadeo 0.5s infinite;
+            border: 2px solid #ef4444 !important;
+        }
+        
+        @keyframes alarmaParpadeo {
+            0%, 100% { 
+                background-color: rgba(239, 68, 68, 0.05);
+                box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+            }
+            50% { 
+                background-color: rgba(239, 68, 68, 0.15);
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            }
+        }
+        
+        @keyframes botonPulso {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
 </head>
 <body>
 
     <div id="overlay-panel" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:900;" onclick="cerrarPanel()"></div>
-
     <div id="panel-perfil" style="position:fixed; top:0; right:-380px; width:380px; height:100%; background:#1e293b; border-left:1px solid #334155; z-index:1000; transition:right 0.3s cubic-bezier(0.4,0,0.2,1); padding:30px 24px; display:flex; flex-direction:column; overflow-y:auto;">
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-            <h3 style="font-size:14px; font-weight:800; letter-spacing:0.5px; color:#f1f5f9;">👤 PERFIL DEL OPERADOR</h3>
-            <button onclick="cerrarPanel()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:20px;">✕</button>
-        </div>
-
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;"><h3 style="font-size:14px; font-weight:800; letter-spacing:0.5px; color:#f1f5f9;">👤 PERFIL DEL OPERADOR</h3><button onclick="cerrarPanel()" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:20px;">✕</button></div>
         <div style="background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
-            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Nombre y Apellido</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-nombre">---</p></div>
-            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Rango Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-rango">---</p></div>
-            <div><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px; letter-spacing:0.5px;">Carnet Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9; font-family:monospace;" id="panel-carnet">---</p></div>
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Nombre y Apellido</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-nombre">---</p></div>
+            <div style="margin-bottom:16px;"><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Rango Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9;" id="panel-rango">---</p></div>
+            <div><p style="color:#64748b; font-size:10px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Carnet Militar</p><p style="font-weight:700; font-size:14px; color:#f1f5f9; font-family:monospace;" id="panel-carnet">---</p></div>
         </div>
-
         <button onclick="mostrarFormClave()" id="btn-cambiar-clave" style="background:transparent; border:1px solid #334155; color:#e2e8f0; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; margin-bottom:24px; display:flex; align-items:center; gap:10px; width:100%;"><i data-lucide="lock"></i> Cambiar Contraseña</button>
-
         <div id="form-cambiar-clave" style="display:none; background:#0f172a; border-radius:10px; padding:20px; margin-bottom:24px; border:1px solid #334155;">
-            <h4 style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.5px;">🔒 NUEVA CONTRASEÑA</h4>
+            <h4 style="font-size:12px; font-weight:800; color:#94a3b8; margin-bottom:16px; text-transform:uppercase;">🔒 NUEVA CONTRASEÑA</h4>
             <div style="margin-bottom:12px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Nueva Contraseña</label><input type="password" id="input-nueva-clave" placeholder="Mínimo 4 caracteres" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
             <div style="margin-bottom:16px;"><label style="font-size:10px; color:#64748b; text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">Confirmar Contraseña</label><input type="password" id="input-confirmar-clave" placeholder="Repita la contraseña" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:10px 12px; color:#fff; font-size:13px; outline:none;"></div>
-            <div style="display:flex; gap:8px;">
-                <button onclick="cambiarContrasena()" style="flex:1; background:#2563eb; color:white; border:none; padding:12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">ACTUALIZAR</button>
-                <button onclick="cancelarFormClave()" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:12px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">CANCELAR</button>
-            </div>
+            <div style="display:flex; gap:8px;"><button onclick="cambiarContrasena()" style="flex:1; background:#2563eb; color:white; border:none; padding:12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">ACTUALIZAR</button><button onclick="cancelarFormClave()" style="background:transparent; border:1px solid #334155; color:#94a3b8; padding:12px 16px; border-radius:6px; cursor:pointer; font-weight:700; font-size:13px;">CANCELAR</button></div>
             <p id="msg-clave" style="text-align:center; margin-top:10px; font-size:11px; font-weight:600; display:none;"></p>
         </div>
-
         <a href="login.html" onclick="localStorage.clear()" style="background:transparent; border:1px solid rgba(239,68,68,0.3); color:#ef4444; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;"><i data-lucide="log-out"></i> Cerrar Sesión</a>
     </div>
 
@@ -55,14 +67,10 @@
         </aside>
 
         <div class="dash-contenido-derecha">
-            <header class="dash-navbar">
-                <div class="dash-navbar-titulo"><h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2></div>
+            <header class="dash-navbar"><div class="dash-navbar-titulo"><h2>AEGIS LPR - SEGURIDAD Y CONTROL PERIMETRAL</h2></div>
                 <div class="dash-navbar-info">
                     <div class="dash-info-tiempo"><i data-lucide="clock"></i> <span id="dash-reloj">--:--:--</span></div>
-                    <div class="dash-info-perfil" onclick="abrirPanel()" style="cursor:pointer;">
-                        <div class="dash-perfil-texto"><span class="dash-perfil-nombre" id="nombre-operador-nav">Guardia de Turno</span><span class="dash-perfil-rol">Control Perimetral</span></div>
-                        <div class="dash-perfil-avatar"><i data-lucide="user"></i></div>
-                    </div>
+                    <div class="dash-info-perfil" onclick="abrirPanel()" style="cursor:pointer;"><div class="dash-perfil-texto"><span class="dash-perfil-nombre" id="nombre-operador-nav">Guardia de Turno</span><span class="dash-perfil-rol">Control Perimetral</span></div><div class="dash-perfil-avatar"><i data-lucide="user"></i></div></div>
                 </div>
             </header>
 
@@ -75,21 +83,24 @@
 
                 <section class="dash-seccion-monitoreo">
                     <div class="dash-bloque-camara dash-anim-4">
-                        <div class="dash-camara-cabecera"><span class="dash-camara-tag"><span class="dash-punto-vivo"></span> VERIFICACIÓN</span><span>PROCESAMIENTO DE PLACA</span></div>
-                        <div class="dash-camara-video" id="contenedor-camara" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;">
-                            <i data-lucide="upload-cloud" style="width:40px;height:40px;color:#64748b;"></i>
-                            <p style="color:#94a3b8;font-size:12px;text-align:center;">Seleccione una imagen de placa<br>o escriba la matrícula manualmente</p>
+                        <div class="dash-camara-cabecera"><span class="dash-camara-tag"><span class="dash-punto-vivo"></span> VERIFICACIÓN</span><span>VISTA DE IMAGEN</span></div>
+                        <div class="dash-camara-video" style="display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                            <img id="imagen-procesada" src="" style="width:100%;height:100%;object-fit:contain;display:none;">
+                            <div id="placeholder-camara" style="text-align:center;padding:20px;"><i data-lucide="image" style="width:48px;height:48px;color:#334155;"></i><p style="color:#64748b;font-size:12px;margin-top:8px;">Imagen de placa</p></div>
+                        </div>
+                        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;background:#0f172a;border-radius:0 0 10px 10px;">
                             <input type="file" id="input-imagen-placa" accept="image/*" style="display:none;">
-                            <button onclick="document.getElementById('input-imagen-placa').click()" class="veh-btn veh-btn-guardar" style="padding:8px 14px;font-size:11px;"><i data-lucide="image"></i> Subir Imagen</button>
-                            <button onclick="procesarImagenManual()" class="veh-btn veh-btn-guardar" style="padding:8px 14px;font-size:11px;margin-top:4px;"><i data-lucide="scan"></i> Procesar Imagen</button>
-                            <div style="display:flex;gap:8px;margin-top:4px;">
-                                <input type="text" id="input-placa-manual" placeholder="O escriba la placa" style="background:#0f172a;border:1px solid #334155;border-radius:6px;padding:8px 12px;color:#fff;font-size:12px;width:160px;text-transform:uppercase;outline:none;">
-                                <button onclick="procesarPlacaManual()" class="veh-btn veh-btn-limpiar" style="padding:8px 14px;font-size:11px;"><i data-lucide="search"></i> Verificar</button>
+                            <div style="display:flex;gap:8px;">
+                                <button onclick="document.getElementById('input-imagen-placa').click()" class="veh-btn veh-btn-guardar" style="flex:1;padding:10px;font-size:11px;"><i data-lucide="image"></i> Subir Imagen</button>
+                                <button onclick="procesarImagenManual()" class="veh-btn veh-btn-guardar" style="flex:1;padding:10px;font-size:11px;"><i data-lucide="scan"></i> Procesar con IA</button>
                             </div>
-                            <img id="preview-imagen" src="" style="max-width:200px;max-height:100px;display:none;border-radius:6px;border:1px solid #334155;">
+                            <div style="display:flex;gap:8px;">
+                                <input type="text" id="input-placa-manual" placeholder="O escriba la placa manualmente" style="flex:1;background:#1e293b;border:1px solid #334155;border-radius:6px;padding:10px 12px;color:#fff;font-size:12px;text-transform:uppercase;outline:none;">
+                                <button onclick="procesarPlacaManual()" id="btn-verificar-manual" class="veh-btn veh-btn-limpiar" style="padding:10px 14px;font-size:11px;white-space:nowrap;"><i data-lucide="search"></i> Verificar</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="dash-bloque-analisis dash-anim-5">
+                    <div class="dash-bloque-analisis dash-anim-5" id="bloque-analisis">
                         <div class="dash-analisis-cabecera"><h3>ÚLTIMA DETECCIÓN DE MATRÍCULA</h3></div>
                         <div class="dash-matrícula-vista"><span class="dash-matricula-pais">VENEZUELA</span><span class="dash-matricula-letras">---</span></div>
                         <div class="dash-ficha-propietario">
@@ -100,7 +111,6 @@
                         <div class="dash-indicador-acceso dash-acceso-autorizado"><i data-lucide="check-circle-2"></i> ESPERANDO LECTURA</div>
                     </div>
                 </section>
-
                 <section class="dash-seccion-tabla dash-anim-6">
                     <div class="dash-tabla-cabecera"><h3>ÚLTIMOS REGISTROS DE ACCESO</h3></div>
                     <div class="dash-tabla-contenedor"><table class="dash-tabla"><thead><tr><th>Matrícula / Placa</th><th>Fecha y Hora</th><th>Estado de Acceso</th><th>Propietario</th></tr></thead><tbody id="dash-tabla-body"></tbody></table></div>
@@ -109,67 +119,188 @@
         </div>
     </div>
 
+    <!-- Controles de alarma -->
+    <div id="alarmaControls" style="position:fixed; bottom:20px; right:20px; z-index:9999; display:none;">
+        <button onclick="silenciarAlarma()" style="background:#ef4444; color:white; border:none; padding:12px 20px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; box-shadow:0 4px 12px rgba(239,68,68,0.3); animation: botonPulso 1s infinite;">
+            🔇 SILENCIAR ALARMA
+        </button>
+    </div>
+
     <script src="js/dashboard.js"></script>
     <script>
         lucide.createIcons();
+        
         if (localStorage.getItem("modo-oscuro") === "true") document.body.classList.add("modo-sigilo");
+        
         const op = localStorage.getItem("operador_nombre");
         if (op) document.getElementById("nombre-operador-nav").textContent = op;
-        setInterval(() => { const reloj = document.getElementById('dash-reloj'); if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0]; }, 1000);
-
+        
+        setInterval(() => { 
+            const reloj = document.getElementById('dash-reloj'); 
+            if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0]; 
+        }, 1000);
+        
         const btnModo = document.getElementById('dash-btn-modo');
         const textoModo = document.getElementById('dash-texto-modo');
-        setTimeout(() => { if(document.body.classList.contains("modo-sigilo")){ textoModo.textContent="Modo Estándar"; const i=btnModo.querySelector('i'); if(i)i.setAttribute('data-lucide','sun'); lucide.createIcons(); } }, 100);
-        btnModo.addEventListener('click',(e)=>{ e.preventDefault(); document.body.classList.toggle('modo-sigilo'); const a=document.body.classList.contains('modo-sigilo'); localStorage.setItem("modo-oscuro",a); textoModo.textContent=a?"Modo Estándar":"Modo Nocturno"; const i=btnModo.querySelector('i'); if(i)i.setAttribute('data-lucide',a?'sun':'moon'); lucide.createIcons(); });
+        setTimeout(() => { 
+            if(document.body.classList.contains("modo-sigilo")){ 
+                textoModo.textContent="Modo Estándar"; 
+                const i=btnModo.querySelector('i'); 
+                if(i)i.setAttribute('data-lucide','sun'); 
+                lucide.createIcons(); 
+            } 
+        }, 100);
+        
+        btnModo.addEventListener('click',(e)=>{ 
+            e.preventDefault(); 
+            document.body.classList.toggle('modo-sigilo'); 
+            const a=document.body.classList.contains('modo-sigilo'); 
+            localStorage.setItem("modo-oscuro",a); 
+            textoModo.textContent=a?"Modo Estándar":"Modo Nocturno"; 
+            const i=btnModo.querySelector('i'); 
+            if(i)i.setAttribute('data-lucide',a?'sun':'moon'); 
+            lucide.createIcons(); 
+        });
 
         let archivoSeleccionado = null;
-        document.getElementById('input-imagen-placa').addEventListener('change', previewImagen);
-
-        function previewImagen(event) {
+        document.getElementById('input-imagen-placa').addEventListener('change', function(event) {
             archivoSeleccionado = event.target.files[0];
             if (archivoSeleccionado) {
                 const reader = new FileReader();
-                reader.onload = function(e) { document.getElementById('preview-imagen').src = e.target.result; document.getElementById('preview-imagen').style.display = 'block'; };
+                reader.onload = function(e) { 
+                    document.getElementById('imagen-procesada').src = e.target.result; 
+                    document.getElementById('imagen-procesada').style.display = 'block'; 
+                    document.getElementById('placeholder-camara').style.display = 'none'; 
+                };
                 reader.readAsDataURL(archivoSeleccionado);
             }
-        }
+        });
 
         async function procesarImagenManual() {
-            if (!archivoSeleccionado) { alert('Seleccione una imagen primero'); return; }
-            await procesarImagen(archivoSeleccionado);
-        }
-
-        async function procesarImagen(file) {
-            const formData = new FormData(); formData.append('file', file);
+            if (!archivoSeleccionado) { 
+                alert('Seleccione una imagen primero'); 
+                return; 
+            }
+            const formData = new FormData(); 
+            formData.append('file', archivoSeleccionado);
             try {
-                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { method: 'POST', body: formData });
+                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { 
+                    method: 'POST', 
+                    body: formData 
+                });
                 const data = await r.json();
-                if (r.ok) procesarDeteccion(data); else alert('⚠️ ' + (data.detail || 'No se pudo leer'));
-            } catch(e) { console.error(e); }
+                if (r.ok && data.imagen_procesada) {
+                    document.getElementById('imagen-procesada').src = data.imagen_procesada;
+                }
+            } catch(e) { 
+                console.error('Error:', e); 
+            }
         }
 
         async function procesarPlacaManual() {
             const placa = document.getElementById('input-placa-manual').value.trim();
-            if (!placa) { alert('Escriba una placa'); return; }
-            const formData = new FormData(); formData.append('placa_manual', placa);
+            if (!placa) { 
+                alert('Escriba una placa'); 
+                return; 
+            }
+            
+            const btn = document.getElementById('btn-verificar-manual');
+            const orig = btn.innerHTML; 
+            btn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Verificando...'; 
+            btn.disabled = true; 
+            lucide.createIcons();
+            
+            const formData = new FormData(); 
+            formData.append('placa_manual', placa);
+            
             try {
-                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { method: 'POST', body: formData });
-                const data = await r.json();
-                if (r.ok) { procesarDeteccion(data); document.getElementById('input-placa-manual').value = ''; }
-            } catch(e) { console.error(e); }
+                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-manual-broadcast', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                
+                if (r.ok) {
+                    document.getElementById('input-placa-manual').value = '';
+                    // ✅ NO llamar a procesarDeteccion aquí
+                    // El WebSocket lo hará automáticamente
+                }
+            } catch(e) { 
+                console.error(e); 
+            }
+            
+            btn.innerHTML = orig; 
+            btn.disabled = false; 
+            lucide.createIcons();
         }
 
-        function abrirPanel() { document.getElementById("panel-perfil").style.right="0"; document.getElementById("overlay-panel").style.display="block"; document.getElementById("panel-nombre").textContent=localStorage.getItem("operador_nombre")||"---"; document.getElementById("panel-rango").textContent=localStorage.getItem("operador_rango")||"---"; document.getElementById("panel-carnet").textContent=localStorage.getItem("operador_carnet")||"---"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; lucide.createIcons(); }
-        function cerrarPanel() { document.getElementById("panel-perfil").style.right="-380px"; document.getElementById("overlay-panel").style.display="none"; }
-        function mostrarFormClave() { document.getElementById("btn-cambiar-clave").style.display="none"; document.getElementById("form-cambiar-clave").style.display="block"; }
-        function cancelarFormClave() { document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; }
+        function abrirPanel() { 
+            document.getElementById("panel-perfil").style.right="0"; 
+            document.getElementById("overlay-panel").style.display="block"; 
+            document.getElementById("panel-nombre").textContent=localStorage.getItem("operador_nombre")||"---"; 
+            document.getElementById("panel-rango").textContent=localStorage.getItem("operador_rango")||"---"; 
+            document.getElementById("panel-carnet").textContent=localStorage.getItem("operador_carnet")||"---"; 
+            document.getElementById("msg-clave").style.display="none"; 
+            document.getElementById("input-nueva-clave").value=""; 
+            document.getElementById("input-confirmar-clave").value=""; 
+            document.getElementById("btn-cambiar-clave").style.display="flex"; 
+            document.getElementById("form-cambiar-clave").style.display="none"; 
+            lucide.createIcons(); 
+        }
+        
+        function cerrarPanel() { 
+            document.getElementById("panel-perfil").style.right="-380px"; 
+            document.getElementById("overlay-panel").style.display="none"; 
+        }
+        
+        function mostrarFormClave() { 
+            document.getElementById("btn-cambiar-clave").style.display="none"; 
+            document.getElementById("form-cambiar-clave").style.display="block"; 
+        }
+        
+        function cancelarFormClave() { 
+            document.getElementById("btn-cambiar-clave").style.display="flex"; 
+            document.getElementById("form-cambiar-clave").style.display="none"; 
+            document.getElementById("msg-clave").style.display="none"; 
+            document.getElementById("input-nueva-clave").value=""; 
+            document.getElementById("input-confirmar-clave").value=""; 
+        }
+        
         function cambiarContrasena() {
-            const nueva = document.getElementById("input-nueva-clave").value, confirmar = document.getElementById("input-confirmar-clave").value, msg = document.getElementById("msg-clave");
-            if (!nueva || nueva.length < 4) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ Mínimo 4 caracteres."; return; }
-            if (nueva !== confirmar) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ No coinciden."; return; }
+            const nueva = document.getElementById("input-nueva-clave").value;
+            const confirmar = document.getElementById("input-confirmar-clave").value;
+            const msg = document.getElementById("msg-clave");
+            
+            if (!nueva || nueva.length < 4) { 
+                msg.style.display="block"; 
+                msg.style.color="#ef4444"; 
+                msg.textContent="❌ Mínimo 4 caracteres."; 
+                return; 
+            }
+            if (nueva !== confirmar) { 
+                msg.style.display="block"; 
+                msg.style.color="#ef4444"; 
+                msg.textContent="❌ No coinciden."; 
+                return; 
+            }
+            
             const carnet = localStorage.getItem("operador_carnet");
-            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({carnet_militar:carnet,nombre_apellido:localStorage.getItem("operador_nombre"),correo_electronico:"",rango:localStorage.getItem("operador_rango"),contrasena:nueva}) })
-            .then(r => r.json()).then(data => { msg.style.display="block"; msg.textContent = data.actualizado ? "✅ Contraseña actualizada." : "❌ Error."; msg.style.color = data.actualizado ? "#10b981" : "#ef4444"; });
+            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { 
+                method:"PUT", 
+                headers:{"Content-Type":"application/json"}, 
+                body:JSON.stringify({
+                    carnet_militar:carnet,
+                    nombre_apellido:localStorage.getItem("operador_nombre"),
+                    correo_electronico:"",
+                    rango:localStorage.getItem("operador_rango"),
+                    contrasena:nueva
+                }) 
+            })
+            .then(r => r.json())
+            .then(data => { 
+                msg.style.display="block"; 
+                msg.textContent = data.actualizado ? "✅ Contraseña actualizada." : "❌ Error."; 
+                msg.style.color = data.actualizado ? "#10b981" : "#ef4444"; 
+            });
         }
     </script>
 </body>

@@ -1,7 +1,24 @@
 /* ==========================================================================
-   MÓDULO DE VEHÍCULOS - PROPORCIONES COMPACTAS ALINEADAS AL DASHBOARD (.veh-)
-   CON MICRO-INTERACCIONES Y ANIMACIONES FLUIDAS
+   CONFIGURACIÓN ADAPTATIVA Y VARIABLES TÁCTICAS (MÓDULO VEHÍCULOS)
    ========================================================================== */
+:root {
+    --bg-dark-inputs: rgba(2, 6, 23, 0.65);
+    --card-bg-tactical: rgba(15, 23, 42, 0.45);
+    --border-tactical: rgba(51, 65, 85, 0.4);
+    
+    /* Paleta unificada con Login */
+    --neon-blue: #2563eb;
+    --neon-cyan: #06b6d4;
+    --neon-green: #10b981;
+    --neon-red: #ef4444;
+    
+    --text-primary: #f8fafc;
+    --text-muted: #64748b;
+    --text-labels: #475569;
+    
+    /* Curva de aceleración orgánica para operaciones fluidas */
+    --transition-tactical: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* 1. Contenedor de alineación global */
 .veh-main-container {
@@ -13,91 +30,111 @@
     width: 100%;
 }
 
-@media (max-width: 1150px) {
-    .veh-main-container {
-        grid-template-columns: 1fr;
-        padding: 16px;
-        gap: 16px;
-    }
-}
-
-/* 2. Tarjeta Base del Módulo Escala Fina */
+/* 2. Tarjeta Base del Módulo - Glassmorphism Blindado y Compacto */
 .veh-tarjeta-modulo {
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg-tactical);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-tactical);
+    border-radius: 14px;
+    padding: 22px 20px;
+    box-shadow: 
+        0 15px 35px -12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    position: relative;
+    transition: var(--transition-tactical);
 }
 
-/* Cabecera interna de las tarjetas */
+.veh-tarjeta-modulo:hover {
+    border-color: rgba(6, 182, 212, 0.25);
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 25px rgba(6, 182, 212, 0.02);
+}
+
+/* Cabecera interna de las tarjetas - Estilo HUD */
 .veh-tarjeta-cabecera {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    color: #f1f5f9;
-    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
     padding-bottom: 10px;
 }
 
 .veh-tarjeta-cabecera i {
-    width: 16px;
-    height: 16px;
-    color: #3b82f6;
+    width: 14px;
+    height: 14px;
+    color: var(--neon-cyan);
+    filter: drop-shadow(0 0 4px var(--neon-cyan));
 }
 
 .veh-tarjeta-cabecera h3 {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    font-family: 'Figtree', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* ==========================================================================
-   FORMULARIO COMPACTO
+   FORMULARIO COMPACTO AVANZADO
    ========================================================================== */
 .veh-formulario {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .veh-grupo-input {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 }
 
 .veh-grupo-input label {
+    font-family: 'Figtree', sans-serif;
     font-size: 10px;
-    font-weight: 700;
-    color: #94a3b8;
+    font-weight: 800;
+    color: var(--text-labels);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 1.5px;
+    margin-left: 2px;
+    transition: var(--transition-tactical);
 }
 
+/* Inputs, Selects y Textareas unificados y refinados */
 .veh-grupo-input input,
-.veh-grupo-input select {
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #ffffff;
+.veh-grupo-input select,
+.veh-grupo-input textarea {
+    font-family: 'Figtree', sans-serif;
+    background-color: var(--bg-dark-inputs);
+    border: 1px solid var(--border-tactical);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--text-primary);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     outline: none;
-    /* Animación de foco acelerada pero orgánica */
-    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                background-color 0.2s ease;
+    transition: var(--transition-tactical);
 }
 
 .veh-grupo-input input:focus,
-.veh-grupo-input select:focus {
-    border-color: #3b82f6;
-    background-color: #0b1120;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+.veh-grupo-input select:focus,
+.veh-grupo-input textarea:focus {
+    border-color: rgba(6, 182, 212, 0.4);
+    background-color: #020617;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.06);
+}
+
+/* Cambio dinámico del label al enfocar el input */
+.veh-grupo-input:focus-within label {
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
 }
 
 .veh-doble-columna {
@@ -106,64 +143,85 @@
     gap: 12px;
 }
 
-/* BOTONERA DEL FORMULARIO */
+/* ==========================================================================
+   BOTONERA CON ANIMACIONES DE FLUJO LÍQUIDO
+   ========================================================================== */
 .veh-formulario-botones {
     display: flex;
     gap: 10px;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .veh-btn {
+    font-family: 'Figtree', sans-serif;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 700;
+    padding: 11px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 800;
     cursor: pointer;
     border: none;
     text-transform: uppercase;
-    /* Transición suave para transformaciones físicas y cambios de color */
-    transition: background-color 0.2s ease, 
-                color 0.2s ease, 
-                transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.2s ease;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-tactical);
 }
 
-.veh-btn i { width: 14px; height: 14px; }
+.veh-btn i { 
+    width: 12px; 
+    height: 12px; 
+    transition: var(--transition-tactical);
+}
 
+/* Botón Guardar - Gradiente Táctico en Movimiento */
 .veh-btn-guardar {
     flex: 2;
-    background-color: #2563eb;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #06b6d4 100%);
+    background-size: 200% auto;
     color: #ffffff;
-}
-.veh-btn-guardar:hover { 
-    background-color: #1d4ed8;
-    transform: translateY(-1px); /* Elevación sutil al posar el mouse */
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
 }
 
+.veh-btn-guardar:hover { 
+    background-position: right center;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 18px rgba(6, 182, 212, 0.3);
+}
+
+.veh-btn-guardar:hover i {
+    transform: translateX(2px);
+}
+
+/* Botón Limpiar - Minimalista con Borde Activo */
 .veh-btn-limpiar {
     flex: 1;
-    background-color: transparent;
-    color: #94a3b8;
-    border: 1px solid #334155;
-}
-.veh-btn-limpiar:hover { 
-    background-color: #334155; 
-    color: #ffffff;
-    transform: translateY(-1px);
+    background-color: rgba(30, 41, 59, 0.15);
+    color: var(--text-muted);
+    border: 1px solid var(--border-tactical);
 }
 
-/* Animación de "click" u opresión táctil para ambos botones */
+.veh-btn-limpiar:hover { 
+    background-color: rgba(51, 65, 85, 0.35);
+    border-color: #64748b;
+    color: #ffffff;
+    transform: translateY(-1.5px);
+}
+
+.veh-btn-limpiar:hover i {
+    transform: rotate(-45deg);
+}
+
+/* Compresión física al hacer click */
 .veh-btn:active {
-    transform: translateY(1px) scale(0.98);
+    transform: translateY(1px) scale(0.97) !important;
 }
 
 /* ==========================================================================
-   BARRA DE BÚSQUEDA Y TABLA UNIFICADA
+   BARRA DE BÚSQUEDA Y CONTROL DE REGISTROS
    ========================================================================== */
 .veh-tabla-herramientas {
     margin-bottom: 14px;
@@ -176,43 +234,50 @@
 
 .veh-icono-buscar {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #64748b;
+    color: #475569;
     width: 14px;
     height: 14px;
-    transition: color 0.2s ease;
+    transition: var(--transition-tactical);
+    z-index: 2;
 }
 
 .veh-barra-busqueda input {
     width: 100%;
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    padding: 9px 12px 9px 36px;
+    background-color: var(--bg-dark-inputs);
+    border: 1px solid var(--border-tactical);
+    border-radius: 10px;
+    padding: 10px 14px 10px 38px;
     color: #ffffff;
     font-size: 12px;
     outline: none;
-    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.veh-barra-busqueda input:focus { 
-    border-color: #3b82f6; 
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-/* Cambia el color del ícono lupa dinámicamente cuando el usuario escribe */
-.veh-barra-busqueda input:focus + .veh-icono-buscar {
-    color: #3b82f6;
+    transition: var(--transition-tactical);
 }
 
-/* Tabla Adaptable con Altura Controlada */
+.veh-barra-busqueda input:focus { 
+    border-color: rgba(6, 182, 212, 0.4);
+    background-color: #020617;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.06);
+}
+
+.veh-barra-busqueda input:focus ~ .veh-icono-buscar {
+    color: var(--neon-cyan);
+    filter: drop-shadow(0 0 4px var(--neon-cyan));
+}
+
+/* ==========================================================================
+   TABLA ADAPTABLE TERMINAL HUD (ESTILIZADA)
+   ========================================================================== */
 .veh-tabla-contenedor {
     overflow-x: auto;
     width: 100%;
-    background-color: #0f172a;
-    border-radius: 8px;
-    border: 1px solid rgba(51, 65, 85, 0.5);
+    background-color: var(--card-bg-tactical);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 14px;
+    border: 1px solid var(--border-tactical);
 }
 
 .veh-tabla {
@@ -223,162 +288,153 @@
 }
 
 .veh-tabla th {
-    padding: 10px 12px;
-    color: #64748b;
-    font-weight: 700;
+    font-family: 'Figtree', sans-serif;
+    padding: 11px 14px;
+    color: var(--text-muted);
+    font-weight: 800;
     text-transform: uppercase;
-    font-size: 10px;
-    border-bottom: 1px solid #334155;
-    background-color: rgba(15, 23, 42, 0.6);
+    font-size: 9.5px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--border-tactical);
+    background-color: rgba(15, 23, 42, 0.8);
 }
 
 .veh-tabla td {
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    padding: 11px 14px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.15);
     color: #e2e8f0;
-    font-weight: 600;
+    font-weight: 500;
     vertical-align: middle;
 }
 
-/* Desvanecimiento progresivo muy estético al iluminar filas */
+/* Filas con iluminación militar progresiva */
 .veh-fila-interactiva {
-    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .veh-fila-interactiva:hover {
-    background-color: rgba(51, 65, 85, 0.3);
+    background-color: rgba(51, 65, 85, 0.2);
 }
 
+/* Identificador Matrícula (Estilo Chapa Metálica) */
 .veh-badge-placa {
-    background-color: #1e293b;
-    padding: 3px 6px;
-    border-radius: 4px;
-    border: 1px solid #475569;
-    font-family: monospace;
-    font-size: 12px;
+    background-color: rgba(2, 6, 23, 0.8);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 11.5px;
     color: #ffffff;
-}
-
-.veh-badge-status {
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    display: inline-block;
 }
 
-.veh-status-autorizado { background-color: rgba(16, 185, 129, 0.12); color: #10b981; }
-.veh-status-bloqueado { background-color: rgba(239, 68, 68, 0.12); color: #ef4444; }
+/* Estados HUD con micro-resplandor */
+.veh-badge-status {
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 9.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
 
-/* BOTONES DE ACCIÓN (Editar y Eliminar) */
+.veh-status-autorizado { 
+    background-color: rgba(16, 185, 129, 0.06); 
+    color: var(--neon-green);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    text-shadow: 0 0 6px rgba(16, 185, 129, 0.25);
+}
+
+.veh-status-bloqueado { 
+    background-color: rgba(239, 68, 68, 0.06); 
+    color: var(--neon-red);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    text-shadow: 0 0 6px rgba(239, 68, 68, 0.25);
+}
+
+/* BOTONES DE ACCIÓN MIRA TÁCTICA (Editar y Eliminar) */
 .veh-tabla-acciones {
     display: flex;
     gap: 6px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .veh-btn-accion {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: 1px solid #334155;
-    background-color: #1e293b;
-    color: #94a3b8;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--border-tactical);
+    background-color: rgba(15, 23, 42, 0.8);
+    color: var(--text-muted);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* Transición ágil para efectos hover y activos */
-    transition: color 0.2s ease, 
-                border-color 0.2s ease, 
-                background-color 0.2s ease, 
-                transform 0.1s ease;
+    transition: var(--transition-tactical);
 }
 
-.veh-btn-accion i { width: 12px; height: 12px; }
+.veh-btn-accion i { 
+    width: 13px; 
+    height: 13px; 
+    transition: var(--transition-tactical);
+}
 
 .veh-accion-editar:hover {
-    color: #3b82f6;
-    border-color: #3b82f6;
-    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--neon-cyan);
+    border-color: rgba(6, 182, 212, 0.4);
+    background-color: rgba(6, 182, 212, 0.05);
     transform: translateY(-1px);
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.12);
 }
 
 .veh-accion-eliminar:hover {
-    color: #ef4444;
-    border-color: #ef4444;
-    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--neon-red);
+    border-color: rgba(239, 68, 68, 0.4);
+    background-color: rgba(239, 68, 68, 0.05);
     transform: translateY(-1px);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.12);
 }
 
 .veh-btn-accion:active {
-    transform: translateY(1px) scale(0.93);
+    transform: translateY(1px) scale(0.92);
 }
+
 /* ==========================================================================
    TEXTAREA DE OBSERVACIÓN
    ========================================================================== */
 .veh-grupo-input textarea {
-    background-color: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 500;
-    outline: none;
-    resize: vertical;
-    min-height: 50px;
-    font-family: inherit;
-    transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
-                box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                background-color 0.2s ease;
-}
-
-.veh-grupo-input textarea:focus {
-    border-color: #3b82f6;
-    background-color: #0b1120;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    resize: none;
+    min-height: 60px;
 }
 
 .veh-grupo-input textarea::placeholder {
-    color: #64748b;
-    font-style: italic;
+    color: #334155;
 }
+
 /* ==========================================================================
-   MODO SIGILO / OPERACIONES NOCTURNAS PARA MÓDULOS
+   MODO SIGILO / OPERACIONES NOCTURNAS AVANZADO
    ========================================================================== */
 body.modo-sigilo .veh-tarjeta-modulo,
-body.modo-sigilo .veh-tabla-contenedor,
+body.modo-sigilo .veh-tabla-contenedor {
+    background-color: #030712;
+    border-color: rgba(30, 41, 59, 0.7);
+}
+
 body.modo-sigilo .veh-barra-busqueda input,
 body.modo-sigilo .veh-grupo-input input,
 body.modo-sigilo .veh-grupo-input select,
 body.modo-sigilo .veh-grupo-input textarea {
-    background-color: #0b0f14;
-    border-color: #1e293b;
-    transition: background-color 0.5s ease, border-color 0.5s ease;
+    background-color: #010409;
+    border-color: rgba(30, 41, 59, 0.6);
 }
 
 body.modo-sigilo .veh-tabla th {
-    background-color: rgba(11, 15, 20, 0.8);
-}
-
-body.modo-sigilo .veh-tabla td {
-    border-bottom-color: rgba(30, 41, 59, 0.5);
-}
-
-body.modo-sigilo .veh-badge-placa {
-    background-color: #0b0f14;
-    border-color: #1e293b;
+    background-color: #030712;
 }
 
 body.modo-sigilo .veh-fila-interactiva:hover {
-    background-color: rgba(16, 185, 129, 0.05);
-}
-
-body.modo-sigilo .veh-btn-limpiar {
-    border-color: #1e293b;
-    color: #64748b;
-}
-
-body.modo-sigilo .veh-btn-limpiar:hover {
-    background-color: #1e293b;
-    color: #ffffff;
+    background-color: rgba(6, 182, 212, 0.04);
 }
