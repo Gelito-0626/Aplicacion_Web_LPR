@@ -153,6 +153,12 @@
     </div>
 
     <script>
+        // ===== DETECCIÓN DE ENTORNO =====
+        const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+    </script>
+    <script src="js/historial.js"></script>
+    <script>
         lucide.createIcons();
         
         if (localStorage.getItem("modo-oscuro") === "true") {
@@ -163,6 +169,7 @@
             const reloj = document.getElementById('dash-reloj');
             if(reloj) reloj.textContent = new Date().toTimeString().split(' ')[0];
         }, 1000);
+        
         const op = localStorage.getItem("operador_nombre");
         if (op) document.getElementById("nombre-operador-nav").textContent = op;
 
@@ -185,6 +192,11 @@
             lucide.createIcons();
         });
 
+        // Fechas por defecto
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById("hist-desde").value = hoy;
+        document.getElementById("hist-hasta").value = hoy;
+
         // Panel de perfil
         function abrirPanel() { document.getElementById("panel-perfil").style.right="0"; document.getElementById("overlay-panel").style.display="block"; document.getElementById("panel-nombre").textContent=localStorage.getItem("operador_nombre")||"---"; document.getElementById("panel-rango").textContent=localStorage.getItem("operador_rango")||"---"; document.getElementById("panel-carnet").textContent=localStorage.getItem("operador_carnet")||"---"; document.getElementById("msg-clave").style.display="none"; document.getElementById("input-nueva-clave").value=""; document.getElementById("input-confirmar-clave").value=""; document.getElementById("btn-cambiar-clave").style.display="flex"; document.getElementById("form-cambiar-clave").style.display="none"; lucide.createIcons(); }
         function cerrarPanel() { document.getElementById("panel-perfil").style.right="-380px"; document.getElementById("overlay-panel").style.display="none"; }
@@ -195,88 +207,8 @@
             if (!nueva || nueva.length < 4) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ Mínimo 4 caracteres."; return; }
             if (nueva !== confirmar) { msg.style.display="block"; msg.style.color="#ef4444"; msg.textContent="❌ No coinciden."; return; }
             const carnet = localStorage.getItem("operador_carnet");
-            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({carnet_militar:carnet,nombre_apellido:localStorage.getItem("operador_nombre"),correo_electronico:"",rango:localStorage.getItem("operador_rango"),contrasena:nueva}) })
+            fetch(`${BASE_URL}/api/usuarios/actualizar/` + carnet, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({carnet_militar:carnet,nombre_apellido:localStorage.getItem("operador_nombre"),correo_electronico:"",rango:localStorage.getItem("operador_rango"),contrasena:nueva}) })
             .then(r => r.json()).then(data => { msg.style.display="block"; msg.textContent = data.actualizado ? "✅ Contraseña actualizada." : "❌ Error."; msg.style.color = data.actualizado ? "#10b981" : "#ef4444"; });
-        }
-
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById("hist-desde").value = hoy;
-        document.getElementById("hist-hasta").value = hoy;
-        cargarHistorial();
-        
-        document.getElementById("hist-buscar").addEventListener("input", cargarHistorial);
-        document.getElementById("hist-estado").addEventListener("change", cargarHistorial);
-        document.getElementById("hist-desde").addEventListener("change", cargarHistorial);
-        document.getElementById("hist-hasta").addEventListener("change", cargarHistorial);
-
-        async function cargarHistorial() {
-            const desde = document.getElementById("hist-desde").value;
-            const hasta = document.getElementById("hist-hasta").value;
-            const estado = document.getElementById("hist-estado").value;
-            const placa = document.getElementById("hist-buscar").value.trim();
-
-            let url = "http://127.0.0.1:8000/api/lpr/historial?";
-            const params = [];
-            if (desde) params.push("desde=" + desde);
-            if (hasta) params.push("hasta=" + hasta + "T23:59:59");
-            if (estado) params.push("estado=" + estado);
-            if (placa) params.push("placa=" + placa);
-            url += params.join("&");
-
-            try {
-                const respuesta = await fetch(url);
-                const datos = await respuesta.json();
-                
-                const tbody = document.getElementById("hist-tabla-body");
-                const total = document.getElementById("hist-total");
-                
-                tbody.innerHTML = "";
-                total.textContent = datos.total || 0;
-                
-                if (!datos.registros || datos.registros.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">No hay registros de acceso</td></tr>';
-                    return;
-                }
-                
-                datos.registros.forEach(r => {
-                    const estadoClase = r.estado === "PERMITIDO" ? "veh-status-autorizado" : "veh-status-bloqueado";
-                    const fecha = new Date(r.fecha_hora).toLocaleString('es-VE', {
-                        day: '2-digit', month: '2-digit', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit', second: '2-digit'
-                    });
-                    
-                    const fila = document.createElement("tr");
-                    fila.className = "veh-fila-interactiva";
-                    fila.innerHTML = `
-                        <td><span class="veh-badge-placa">${r.placa}</span></td>
-                        <td>${fecha}</td>
-                        <td><span class="veh-badge-status ${estadoClase}">${r.estado === "PERMITIDO" ? "Autorizado" : "Denegado"}</span></td>
-                        <td style="font-size:11px;">${r.motivo || "-"}</td>
-                    `;
-                    tbody.appendChild(fila);
-                });
-                
-            } catch (error) {
-                document.getElementById("hist-tabla-body").innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#ef4444;">Error al conectar con el servidor</td></tr>';
-            }
-        }
-
-        function exportarCSV() {
-            const filas = document.querySelectorAll("#hist-tabla-body tr");
-            let csv = "Placa,Fecha,Estado,Motivo\n";
-            filas.forEach(fila => {
-                const celdas = fila.querySelectorAll("td");
-                if (celdas.length >= 4 && !celdas[0].textContent.includes("No hay") && !celdas[0].textContent.includes("Error") && !celdas[0].textContent.includes("Cargando")) {
-                    csv += `"${celdas[0].textContent.trim()}","${celdas[1].textContent.trim()}","${celdas[2].textContent.trim()}","${celdas[3].textContent.trim()}"\n`;
-                }
-            });
-            if (csv === "Placa,Fecha,Estado,Motivo\n") { alert("No hay datos para exportar."); return; }
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'historial_accesos_' + new Date().toISOString().slice(0,10) + '.csv';
-            a.click();
         }
     </script>
 </body>
