@@ -152,11 +152,6 @@
         <a href="login.html" onclick="localStorage.clear()" style="background:transparent; border:1px solid rgba(239,68,68,0.3); color:#ef4444; padding:14px; border-radius:8px; cursor:pointer; font-weight:700; font-size:13px; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:10px;"><i data-lucide="log-out"></i> Cerrar Sesión</a>
     </div>
 
-    <script>
-        // ===== DETECCIÓN DE ENTORNO =====
-        const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
-    </script>
     <script src="js/historial.js"></script>
     <script>
         lucide.createIcons();
