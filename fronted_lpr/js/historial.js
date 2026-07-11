@@ -4,14 +4,12 @@ const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrende
 
 // Historial de Accesos - Sistema LPR
 
-document.addEventListener("DOMContentLoaded", () => {
-    cargarHistorial();
+cargarHistorial();
 
-    document.getElementById("hist-buscar").addEventListener("input", () => cargarHistorial());
-    document.getElementById("hist-estado").addEventListener("change", () => cargarHistorial());
-    document.getElementById("hist-desde").addEventListener("change", () => cargarHistorial());
-    document.getElementById("hist-hasta").addEventListener("change", () => cargarHistorial());
-});
+document.getElementById("hist-buscar").addEventListener("input", () => cargarHistorial());
+document.getElementById("hist-estado").addEventListener("change", () => cargarHistorial());
+document.getElementById("hist-desde").addEventListener("change", () => cargarHistorial());
+document.getElementById("hist-hasta").addEventListener("change", () => cargarHistorial());
 
 async function cargarHistorial() {
     const desde = document.getElementById("hist-desde").value;
