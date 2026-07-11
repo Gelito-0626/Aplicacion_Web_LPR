@@ -248,3 +248,4 @@ python -m pydoc -w backend_lpr.controllers.acceso_controller
 python -m pydoc -w backend_lpr.controllers.vehiculo_controller
 python -m pydoc -w backend_lpr.controllers.auth_controller
 python -m pydoc -w backend_lpr.controllers.usuario_controller
+"# trigger" 
