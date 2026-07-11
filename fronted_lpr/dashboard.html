@@ -126,6 +126,11 @@
         </button>
     </div>
 
+    <script>
+        // ===== DETECCIÓN DE ENTORNO (para el HTML inline) =====
+        const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+    </script>
     <script src="js/dashboard.js"></script>
     <script>
         lucide.createIcons();
@@ -184,7 +189,7 @@
             const formData = new FormData(); 
             formData.append('file', archivoSeleccionado);
             try {
-                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-imagen', { 
+                const r = await fetch(`${BASE_URL}/api/lpr/procesar-imagen`, { 
                     method: 'POST', 
                     body: formData 
                 });
@@ -214,15 +219,13 @@
             formData.append('placa_manual', placa);
             
             try {
-                const r = await fetch('http://127.0.0.1:8000/api/lpr/procesar-manual-broadcast', { 
+                const r = await fetch(`${BASE_URL}/api/lpr/procesar-manual-broadcast`, { 
                     method: 'POST', 
                     body: formData 
                 });
                 
                 if (r.ok) {
                     document.getElementById('input-placa-manual').value = '';
-                    // ✅ NO llamar a procesarDeteccion aquí
-                    // El WebSocket lo hará automáticamente
                 }
             } catch(e) { 
                 console.error(e); 
@@ -284,7 +287,7 @@
             }
             
             const carnet = localStorage.getItem("operador_carnet");
-            fetch("http://127.0.0.1:8000/api/usuarios/actualizar/" + carnet, { 
+            fetch(`${BASE_URL}/api/usuarios/actualizar/` + carnet, { 
                 method:"PUT", 
                 headers:{"Content-Type":"application/json"}, 
                 body:JSON.stringify({

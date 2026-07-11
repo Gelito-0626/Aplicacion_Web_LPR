@@ -1,3 +1,7 @@
+// ===== DETECCIÓN DE ENTORNO =====
+const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+
 document.getElementById("auth-formulario").addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -10,7 +14,7 @@ document.getElementById("auth-formulario").addEventListener("submit", async func
     }
 
     try {
-        const resp = await fetch("http://127.0.0.1:8000/api/usuarios/login", {
+        const resp = await fetch(`${BASE_URL}/api/usuarios/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ correo_electronico: correo, contrasena: contrasena })
@@ -18,7 +22,6 @@ document.getElementById("auth-formulario").addEventListener("submit", async func
         const data = await resp.json();
 
         if (resp.ok && data.acceso) {
-            // Guardar datos del usuario logueado
             localStorage.setItem("operador_nombre", data.nombre);
             localStorage.setItem("operador_rango", data.rango);
             localStorage.setItem("operador_carnet", data.carnet_militar);

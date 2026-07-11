@@ -1,3 +1,7 @@
+// ===== DETECCIÓN DE ENTORNO =====
+const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+
 document.addEventListener("DOMContentLoaded", () => {
     const checkAccesoLibre = document.getElementById("veh-acceso-libre");
     const contenedorReglas = document.getElementById("veh-contenedor-reglas");
@@ -5,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnLimpiar = document.getElementById("veh-btn-limpiar");
     const busqueda = document.getElementById("veh-buscar");
 
-    let editandoPlaca = null; // Para saber si estamos editando
+    let editandoPlaca = null;
 
     checkAccesoLibre.addEventListener("change", () => {
         contenedorReglas.style.display = checkAccesoLibre.checked ? "none" : "block";
@@ -68,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
             let url, method;
             
             if (editandoPlaca) {
-                url = `http://127.0.0.1:8000/api/vehiculos/actualizar/${editandoPlaca}`;
+                url = `${BASE_URL}/api/vehiculos/actualizar/${editandoPlaca}`;
                 method = "PUT";
             } else {
-                url = "http://127.0.0.1:8000/api/vehiculos/registro";
+                url = `${BASE_URL}/api/vehiculos/registro`;
                 method = "POST";
             }
 
@@ -103,10 +107,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Cargar lista de vehiculos
 async function cargarVehiculos(filtro = "") {
     try {
-        let url = "http://127.0.0.1:8000/api/vehiculos/listar";
+        let url = `${BASE_URL}/api/vehiculos/listar`;
         if (filtro) url += "?busqueda=" + encodeURIComponent(filtro);
         
         const respuesta = await fetch(url);
@@ -154,10 +157,9 @@ async function cargarVehiculos(filtro = "") {
     }
 }
 
-// Editar vehiculo
 async function editarVehiculo(placa) {
     try {
-        const respuesta = await fetch(`http://127.0.0.1:8000/api/vehiculos/buscar/${placa}`);
+        const respuesta = await fetch(`${BASE_URL}/api/vehiculos/buscar/${placa}`);
         const v = await respuesta.json();
         
         document.getElementById("veh-placa").value = v.placa;
@@ -181,12 +183,11 @@ async function editarVehiculo(placa) {
     }
 }
 
-// Eliminar vehiculo
 async function eliminarVehiculo(placa) {
     if (!confirm(`¿Está seguro de eliminar el vehículo con placa ${placa}?`)) return;
     
     try {
-        const respuesta = await fetch(`http://127.0.0.1:8000/api/vehiculos/eliminar/${placa}`, {
+        const respuesta = await fetch(`${BASE_URL}/api/vehiculos/eliminar/${placa}`, {
             method: "DELETE"
         });
         
