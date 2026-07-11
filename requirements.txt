@@ -9,6 +9,8 @@ passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 requests==2.31.0
 opencv-python-headless==4.8.1.78
+torch==2.1.0
+torchvision==0.16.0
 ultralytics==8.0.200
 pytesseract==0.3.13
 Pillow==10.0.0
