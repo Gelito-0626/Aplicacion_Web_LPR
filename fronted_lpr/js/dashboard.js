@@ -1,3 +1,8 @@
+// ===== DETECCIÓN DE ENTORNO =====
+const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+const WS_URL = ES_LOCAL ? 'ws://127.0.0.1:8000/ws/monitoreo' : 'wss://aegis-lpr.onrender.com/ws/monitoreo';
+
 // ✅ Limpiar registros viejos si es un nuevo día
 const hoy = new Date().toDateString();
 const ultimoDia = localStorage.getItem("ultimoDiaDashboard");
@@ -199,7 +204,6 @@ function agregarFilaTabla(r) {
     const row = document.createElement('tr');
     row.innerHTML = `<td><span class="dash-tabla-placa">${r.placa}</span></td><td>${r.fecha}</td><td><span class="dash-badge-acc ${clase}">${texto}</span></td><td>${r.propietario}</td>`;
     
-    // ✅ Insertar al INICIO - Más reciente primero
     if (tbody.firstChild) {
         tbody.insertBefore(row, tbody.firstChild);
     } else {
@@ -211,13 +215,12 @@ function restaurarTabla() {
     const tbody = document.getElementById('dash-tabla-body') || document.querySelector('.dash-tabla tbody');
     if (!tbody) return; 
     tbody.innerHTML = "";
-    // ✅ Invertir orden: más recientes primero
     [...placasEnTabla].reverse().forEach(r => agregarFilaTabla(r));
 }
 
 async function cargarEstadisticas() {
     try {
-        const r = await fetch('http://127.0.0.1:8000/api/vehiculos/listar');
+        const r = await fetch(`${BASE_URL}/api/vehiculos/listar`);
         const datos = await r.json();
         const tr = document.getElementById('dash-total-registrados');
         if (tr) tr.textContent = datos.total || datos.length || 0;
@@ -231,7 +234,7 @@ function conectarWebSocket() {
     if (ws && ws.readyState === WebSocket.OPEN) return;
     
     try {
-        ws = new WebSocket('ws://127.0.0.1:8000/ws/monitoreo');
+        ws = new WebSocket(WS_URL);
         
         ws.onopen = function() {
             console.log("✅ WebSocket conectado");
@@ -264,4 +267,4 @@ actualizarContadores();
 cargarEstadisticas();
 setInterval(cargarEstadisticas, 30000);
 
-console.log("✅ Dashboard listo");
+console.log("✅ Dashboard listo -", ES_LOCAL ? "LOCAL" : "PRODUCCIÓN");

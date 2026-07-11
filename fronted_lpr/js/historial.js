@@ -1,3 +1,7 @@
+// ===== DETECCIÓN DE ENTORNO =====
+const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+
 // Historial de Accesos - Sistema LPR
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,7 +19,7 @@ async function cargarHistorial() {
     const estado = document.getElementById("hist-estado").value;
     const placa = document.getElementById("hist-buscar").value.trim();
 
-    let url = "http://127.0.0.1:8000/api/lpr/historial?";
+    let url = `${BASE_URL}/api/lpr/historial?`;
     const params = [];
     if (desde) params.push("desde=" + desde);
     if (hasta) params.push("hasta=" + hasta + "T23:59:59");

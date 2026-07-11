@@ -1,3 +1,7 @@
+// ===== DETECCIÓN DE ENTORNO =====
+const ES_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const BASE_URL = ES_LOCAL ? 'http://127.0.0.1:8000' : 'https://aegis-lpr.onrender.com';
+
 // Gestión de Usuarios - Sistema LPR
 
 const rango = localStorage.getItem("operador_rango");
@@ -32,10 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             let url, method;
             if (editandoCarnet) {
-                url = `http://127.0.0.1:8000/api/usuarios/actualizar/${editandoCarnet}`;
+                url = `${BASE_URL}/api/usuarios/actualizar/${editandoCarnet}`;
                 method = "PUT";
             } else {
-                url = "http://127.0.0.1:8000/api/usuarios/registro";
+                url = `${BASE_URL}/api/usuarios/registro`;
                 method = "POST";
             }
 
@@ -77,7 +81,7 @@ function cancelarEdicion() {
 
 async function cargarUsuarios() {
     try {
-        const respuesta = await fetch("http://127.0.0.1:8000/api/usuarios/listar");
+        const respuesta = await fetch(`${BASE_URL}/api/usuarios/listar`);
         const datos = await respuesta.json();
         
         const tbody = document.getElementById("usr-tabla-body");
@@ -125,7 +129,7 @@ async function cargarUsuarios() {
 
 async function editarUsuario(carnet) {
     try {
-        const respuesta = await fetch(`http://127.0.0.1:8000/api/usuarios/buscar/${carnet}`);
+        const respuesta = await fetch(`${BASE_URL}/api/usuarios/buscar/${carnet}`);
         const u = await respuesta.json();
         
         document.getElementById("usr-carnet").value = u.carnet_militar;
@@ -148,7 +152,7 @@ async function eliminarUsuario(carnet) {
     if (!confirm(`¿Está seguro de eliminar al usuario ${carnet}?`)) return;
     
     try {
-        const respuesta = await fetch(`http://127.0.0.1:8000/api/usuarios/eliminar/${carnet}`, { method: "DELETE" });
+        const respuesta = await fetch(`${BASE_URL}/api/usuarios/eliminar/${carnet}`, { method: "DELETE" });
         if (respuesta.ok) {
             alert("✅ Usuario eliminado");
             cargarUsuarios();
