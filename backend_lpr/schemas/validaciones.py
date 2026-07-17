@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, EmailStr, validator
 from typing import Optional
 from datetime import time, datetime
 import re
+import html
 
 # ==========================================
 # 1. ESQUEMAS PARA AUTENTICACIÓN Y USUARIOS
@@ -10,16 +11,28 @@ import re
 class UsuarioLogin(BaseModel):
     """Esquema de entrada para validar el inicio de sesión."""
     correo_electronico: EmailStr = Field(..., description="Correo electrónico institucional o civil")
-    contrasena: str = Field(..., min_length=4, description="Contraseña del usuario")
+    contrasena: str = Field(..., min_length=4, max_length=100, description="Contraseña del usuario")
+    
+    @validator('contrasena')
+    def sanitizar_contrasena(cls, v):
+        """Sanitiza la contraseña (sin limitar caracteres especiales)"""
+        return v.strip()
 
 
 class UsuarioCreate(BaseModel):
     """Esquema para validar el registro de nuevo personal militar o civil."""
-    carnet_militar: str = Field(..., min_length=5, description="Carnet militar o cédula (mínimo 5 caracteres)")
-    nombre_apellido: str = Field(..., min_length=3, description="Nombre y apellido completos")
+    carnet_militar: str = Field(..., min_length=5, max_length=20, description="Carnet militar o cédula")
+    nombre_apellido: str = Field(..., min_length=3, max_length=200, description="Nombre y apellido completos")
     correo_electronico: EmailStr = Field(..., description="Correo electrónico válido")
-    rango: Optional[str] = Field('Civil', description="Rango o jerarquía militar. Por defecto 'Civil'")
-    contrasena: str = Field(..., min_length=6, description="Contraseña mínima de 6 caracteres")
+    rango: Optional[str] = Field('Civil', max_length=50, description="Rango militar")
+    contrasena: str = Field(..., min_length=6, max_length=100, description="Contraseña mínima de 6 caracteres")
+    
+    @validator('nombre_apellido')
+    def sanitizar_nombre(cls, v):
+        """Sanitiza el nombre eliminando caracteres peligrosos"""
+        v = html.escape(v.strip())
+        v = re.sub(r'[<>"\'%;()&+]', '', v)
+        return v
 
 
 # ==========================================
@@ -35,7 +48,7 @@ class DeteccionPlacaInput(BaseModel):
         ...,
         min_length=4,
         max_length=15,
-        description="Placa detectada por la IA (formato bolivariano: ABCD123 o similar)"
+        description="Placa detectada por la IA"
     )
     timestamp: datetime = Field(
         default_factory=datetime.now,
@@ -49,7 +62,8 @@ class DeteccionPlacaInput(BaseModel):
     )
     origen: Optional[str] = Field(
         'camara_principal',
-        description="Origen de la detección (cámara, manual, etc.)"
+        max_length=50,
+        description="Origen de la detección"
     )
     
     @validator('placa')
@@ -58,132 +72,67 @@ class DeteccionPlacaInput(BaseModel):
         if not v or not v.strip():
             raise ValueError('La placa no puede estar vacía')
         
-        # Eliminar espacios y convertir a mayúsculas
         placa_limpia = v.strip().upper()
-        # Eliminar caracteres no permitidos (solo letras, números y guiones)
         placa_limpia = re.sub(r'[^A-Z0-9\-]', '', placa_limpia)
         
         if len(placa_limpia) < 4:
             raise ValueError(f'Placa inválida después de limpiar: {placa_limpia}')
         
+        # Sanitizar HTML
+        placa_limpia = html.escape(placa_limpia)
+        
         return placa_limpia
+    
+    @validator('origen')
+    def validar_origen_seguro(cls, v):
+        """Valida que el origen sea uno de los permitidos (previene manipulación)"""
+        ORIGENES_PERMITIDOS = ['camara_principal', 'manual', 'ia', 'api']
+        if v and v not in ORIGENES_PERMITIDOS:
+            raise ValueError(f'Origen no autorizado: {v}')
+        return v
+    
+    @validator('confianza')
+    def validar_confianza(cls, v):
+        """Asegura que la confianza esté en rango válido"""
+        if v is not None and (v < 0.0 or v > 1.0):
+            raise ValueError('La confianza debe estar entre 0.0 y 1.0')
+        return v
 
 
 class VehiculoCreate(BaseModel):
     """
     Esquema para el registro y parametrización de nuevos vehículos.
-    Se usa en el endpoint POST /api/vehiculos/registro
     """
-    placa: str = Field(
-        ...,
-        min_length=4,
-        max_length=15,
-        description="Placa vehicular en formato bolivariano (ABCD123)"
-    )
-    propietario: str = Field(
-        ...,
-        min_length=3,
-        description="Carnet militar o nombre del propietario"
-    )
-    marca_modelo: Optional[str] = Field(
-        None,
-        max_length=100,
-        description="Marca y modelo del vehículo (ej: Toyota Corolla)"
-    )
-    color: Optional[str] = Field(
-        None,
-        max_length=50,
-        description="Color del vehículo"
-    )
-    tipo_vehiculo: Optional[str] = Field(
-        'Particular',
-        max_length=50,
-        description="Tipo de vehículo (Particular, Oficial, Militar, etc.)"
-    )
-    estado_acceso: Optional[str] = Field(
-        'PERMITIDO',
-        description="Estado de acceso: PERMITIDO, DENEGADO, BLOQUEADO o INACTIVO"
-    )
-    observacion: Optional[str] = Field(
-        None,
-        max_length=500,
-        description="Notas especiales de autorización o restricciones"
-    )
-    hora_inicio: Optional[str] = Field(
-        '00:00',
-        description="Hora de inicio de acceso permitido (formato HH:MM)"
-    )
-    hora_fin: Optional[str] = Field(
-        '23:59',
-        description="Hora de fin de acceso permitido (formato HH:MM)"
-    )
+    placa: str = Field(..., min_length=4, max_length=15, description="Placa vehicular")
+    propietario: str = Field(..., min_length=3, max_length=200, description="Propietario")
+    marca_modelo: Optional[str] = Field(None, max_length=100, description="Marca y modelo")
+    color: Optional[str] = Field(None, max_length=50, description="Color")
+    tipo_vehiculo: Optional[str] = Field('Particular', max_length=50, description="Tipo")
+    estado_acceso: Optional[str] = Field('PERMITIDO', max_length=20, description="Estado")
+    observacion: Optional[str] = Field(None, max_length=500, description="Notas")
+    hora_inicio: Optional[str] = Field('00:00', max_length=5, description="Hora inicio")
+    hora_fin: Optional[str] = Field('23:59', max_length=5, description="Hora fin")
     dias_permitidos: Optional[str] = Field(
         'Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo',
-        description="Días autorizados separados por comas"
+        max_length=200,
+        description="Días autorizados"
     )
     
     @validator('placa')
     def validar_y_normalizar_placa(cls, v):
-        """Valida y normaliza el formato de la placa"""
         if not v or not v.strip():
             raise ValueError('La placa es obligatoria')
         
         placa_limpia = v.strip().upper()
+        placa_limpia = html.escape(placa_limpia)
         
-        # Verificar formato bolivariano (4 letras + 3 números)
         if re.match(r'^[A-Z]{4}\d{3}$', placa_limpia):
             return placa_limpia
         
-        # Permitir otros formatos (letras, números y guiones)
         if re.match(r'^[A-Z0-9\-]+$', placa_limpia) and len(placa_limpia) >= 4:
             return placa_limpia
         
-        raise ValueError(
-            f'Formato de placa inválido: {v}. '
-            'Use formato bolivariano (ABCD123) o similar'
-        )
-    
-    @validator('estado_acceso')
-    def validar_estado_acceso(cls, v):
-        """Valida que el estado de acceso sea uno de los permitidos"""
-        if v:
-            estados_validos = ['PERMITIDO', 'DENEGADO', 'BLOQUEADO', 'INACTIVO']
-            if v.upper() not in estados_validos:
-                raise ValueError(
-                    f'Estado de acceso inválido: {v}. '
-                    f'Use: {", ".join(estados_validos)}'
-                )
-            return v.upper()
-        return 'PERMITIDO'
-    
-    @validator('hora_inicio', 'hora_fin')
-    def validar_formato_hora(cls, v):
-        """Valida el formato de hora HH:MM"""
-        if v is None:
-            return v
-        
-        if not re.match(r'^([01]\d|2[0-3]):([0-5]\d)$', v):
-            raise ValueError(f'Formato de hora inválido: {v}. Use HH:MM (00:00 a 23:59)')
-        return v
-
-
-class VehiculoUpdate(BaseModel):
-    """
-    Esquema para actualizar vehículos existentes.
-    Todos los campos son opcionales (solo se actualiza lo enviado).
-    """
-    propietario: Optional[str] = Field(None, min_length=3, description="Nombre del propietario")
-    marca_modelo: Optional[str] = Field(None, max_length=100, description="Marca y modelo")
-    color: Optional[str] = Field(None, max_length=50, description="Color del vehículo")
-    tipo_vehiculo: Optional[str] = Field(None, max_length=50, description="Tipo de vehículo")
-    estado_acceso: Optional[str] = Field(
-        None,
-        description="Estado: PERMITIDO, DENEGADO, BLOQUEADO o INACTIVO"
-    )
-    observacion: Optional[str] = Field(None, max_length=500, description="Observaciones")
-    hora_inicio: Optional[str] = Field(None, description="Hora inicio (HH:MM)")
-    hora_fin: Optional[str] = Field(None, description="Hora fin (HH:MM)")
-    dias_permitidos: Optional[str] = Field(None, description="Días permitidos")
+        raise ValueError(f'Formato de placa inválido: {v}')
     
     @validator('estado_acceso')
     def validar_estado_acceso(cls, v):
@@ -192,7 +141,7 @@ class VehiculoUpdate(BaseModel):
             if v.upper() not in estados_validos:
                 raise ValueError(f'Estado inválido: {v}. Use: {", ".join(estados_validos)}')
             return v.upper()
-        return v
+        return 'PERMITIDO'
     
     @validator('hora_inicio', 'hora_fin')
     def validar_formato_hora(cls, v):
@@ -201,6 +150,44 @@ class VehiculoUpdate(BaseModel):
         if not re.match(r'^([01]\d|2[0-3]):([0-5]\d)$', v):
             raise ValueError(f'Formato de hora inválido: {v}. Use HH:MM')
         return v
+    
+    @validator('propietario', 'marca_modelo', 'color', 'observacion')
+    def sanitizar_campos_texto(cls, v):
+        """Sanitiza campos de texto contra XSS"""
+        if v:
+            v = html.escape(str(v))
+            v = re.sub(r'[<>"\'%;()&+]', '', v)
+        return v
+
+
+class VehiculoUpdate(BaseModel):
+    """Esquema para actualizar vehículos existentes."""
+    propietario: Optional[str] = Field(None, min_length=3, max_length=200)
+    marca_modelo: Optional[str] = Field(None, max_length=100)
+    color: Optional[str] = Field(None, max_length=50)
+    tipo_vehiculo: Optional[str] = Field(None, max_length=50)
+    estado_acceso: Optional[str] = Field(None, max_length=20)
+    observacion: Optional[str] = Field(None, max_length=500)
+    hora_inicio: Optional[str] = Field(None, max_length=5)
+    hora_fin: Optional[str] = Field(None, max_length=5)
+    dias_permitidos: Optional[str] = Field(None, max_length=200)
+    
+    @validator('estado_acceso')
+    def validar_estado_acceso(cls, v):
+        if v:
+            estados_validos = ['PERMITIDO', 'DENEGADO', 'BLOQUEADO', 'INACTIVO']
+            if v.upper() not in estados_validos:
+                raise ValueError(f'Estado inválido: {v}')
+            return v.upper()
+        return v
+    
+    @validator('hora_inicio', 'hora_fin')
+    def validar_formato_hora(cls, v):
+        if v is None:
+            return v
+        if not re.match(r'^([01]\d|2[0-3]):([0-5]\d)$', v):
+            raise ValueError(f'Formato de hora inválido: {v}')
+        return v
 
 
 # ==========================================
@@ -208,9 +195,6 @@ class VehiculoUpdate(BaseModel):
 # ==========================================
 
 class RegistroAccesoResponse(BaseModel):
-    """
-    Esquema de salida para el historial de accesos mostrado en el Dashboard.
-    """
     id_registro: int
     placa_leida: str
     fecha_hora: datetime
@@ -224,9 +208,6 @@ class RegistroAccesoResponse(BaseModel):
 
 
 class VehiculoResponse(BaseModel):
-    """
-    Esquema de respuesta con información completa del vehículo.
-    """
     id: int
     placa: str
     propietario: str
@@ -244,9 +225,27 @@ class VehiculoResponse(BaseModel):
 
 
 class MensajeResponse(BaseModel):
-    """
-    Esquema genérico para respuestas simples del sistema.
-    """
     mensaje: str
     tipo: str = "info"
     detalles: Optional[dict] = None
+
+
+# ==========================================
+# 4. FUNCIONES DE SANITIZACIÓN
+# ==========================================
+
+def sanitizar_texto(texto: str) -> str:
+    """
+    Sanitiza texto eliminando caracteres peligrosos.
+    Previene XSS e inyección de código.
+    """
+    if not texto:
+        return texto
+    
+    texto = html.escape(str(texto))
+    texto = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', texto)
+    
+    if len(texto) > 1000:
+        texto = texto[:1000]
+    
+    return texto.strip()

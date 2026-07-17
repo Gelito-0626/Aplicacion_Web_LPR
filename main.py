@@ -1,13 +1,16 @@
 # main.py
-from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, Form
+from fastapi import FastAPI, Depends, HTTPException, WebSocket, WebSocketDisconnect, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
+from contextlib import asynccontextmanager
 import os
 import hashlib
 import asyncio
+import uuid
+import logging
 
 from backend_lpr.config import engine, get_db, SessionLocal
 from backend_lpr.models import tablas
@@ -17,6 +20,7 @@ from backend_lpr.controllers.acceso_controller import procesar_deteccion_placa, 
 from backend_lpr.controllers.auth_controller import router as auth_router
 from backend_lpr.controllers.vehiculo_controller import router as vehiculo_router
 from backend_lpr.controllers.usuario_controller import router as usuario_router
+from backend_lpr.utils.logger import logger
 
 print("🔧 Inicializando base de datos...")
 tablas.Base.metadata.create_all(bind=engine)
@@ -37,10 +41,18 @@ if not existe:
     print("✅ Usuario administrador creado: comandante@seguridad.mil.ve / admin123")
 db_admin.close()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manejo del ciclo de vida del sistema"""
+    logger.info("🚀 SISTEMA LPR DESPLEGADO")
+    yield
+    logger.info("🛑 SISTEMA DETENIDO")
+
 app = FastAPI(
     title="Aplicación Web LPR de Control Perimetral Autónomo",
     description="Sistema de Reconocimiento de Matrículas (LPR)",
-    version="2.0.0"
+    version="2.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -51,6 +63,30 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# ===== MIDDLEWARE DE SEGURIDAD Y TRAZABILIDAD =====
+@app.middleware("http")
+async def correlation_id_middleware(request: Request, call_next):
+    """Asigna Correlation ID único + Manejo seguro de errores"""
+    correlation_id = str(uuid.uuid4())
+    request.state.correlation_id = correlation_id
+    
+    logger.info(f"[{correlation_id}] {request.method} {request.url.path}")
+    
+    try:
+        response = await call_next(request)
+        response.headers["X-Correlation-ID"] = correlation_id
+        return response
+    except Exception as e:
+        logger.error(f"[{correlation_id}] Error: {str(e)}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Ocurrió un error inesperado",
+                "codigo": correlation_id,
+                "mensaje": f"Reporte este código al soporte: {correlation_id}"
+            }
+        )
 
 app.include_router(auth_router)
 app.include_router(vehiculo_router)
@@ -68,12 +104,12 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        print(f"🔗 Cliente conectado (Total: {len(self.active_connections)})")
+        logger.info(f"🔗 Cliente conectado (Total: {len(self.active_connections)})")
     
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-            print(f"🔌 Cliente desconectado (Total: {len(self.active_connections)})")
+            logger.info(f"🔌 Cliente desconectado (Total: {len(self.active_connections)})")
     
     async def broadcast(self, message: dict):
         desconectados = []
@@ -112,29 +148,35 @@ async def recibir_deteccion_ia(datos: DeteccionPlacaInput, db: Session = Depends
             "detalles": resultado.get("detalles"),
             "timestamp": datetime.now().isoformat()
         })
+        logger.info(f"📡 Detección IA: {resultado.get('placa')} → {resultado.get('estado')}")
         return resultado
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        logger.error(f"Error en detección IA: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al procesar la detección")
 
 @app.post("/api/lpr/procesar-manual-broadcast", tags=["Módulo de Control"])
 async def procesar_manual_broadcast(
     placa_manual: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    datos = DeteccionPlacaInput(placa=placa_manual, timestamp=datetime.now(), confianza=1.0, origen="manual")
-    resultado = procesar_deteccion_placa(datos, db)
-    
-    await asyncio.sleep(0.1)
-    await manager.broadcast({
-        "tipo": "nueva_deteccion",
-        "placa": resultado.get("placa"),
-        "estado": resultado.get("estado"),
-        "propietario": resultado.get("propietario"),
-        "detalles": resultado.get("detalles"),
-        "timestamp": datetime.now().isoformat()
-    })
-    
-    return resultado
+    try:
+        datos = DeteccionPlacaInput(placa=placa_manual, timestamp=datetime.now(), confianza=1.0, origen="manual")
+        resultado = procesar_deteccion_placa(datos, db)
+        
+        await asyncio.sleep(0.1)
+        await manager.broadcast({
+            "tipo": "nueva_deteccion",
+            "placa": resultado.get("placa"),
+            "estado": resultado.get("estado"),
+            "propietario": resultado.get("propietario"),
+            "detalles": resultado.get("detalles"),
+            "timestamp": datetime.now().isoformat()
+        })
+        logger.info(f"📡 Detección manual: {resultado.get('placa')} → {resultado.get('estado')}")
+        return resultado
+    except Exception as e:
+        logger.error(f"Error en detección manual: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al procesar la placa")
 
 @app.get("/", tags=["Diagnóstico"])
 def verificar_servidor():
@@ -142,25 +184,34 @@ def verificar_servidor():
 
 @app.get("/health", tags=["Diagnóstico"])
 def health_check():
-    return {"status": "healthy", "database": "connected"}
+    try:
+        db = SessionLocal()
+        db.execute("SELECT 1")
+        db.close()
+        db_status = "connected"
+    except Exception:
+        db_status = "disconnected"
+    
+    return {
+        "status": "healthy" if db_status == "connected" else "degraded",
+        "database": db_status,
+        "sistema": "AEGIS LPR",
+        "version": "2.0.0"
+    }
 
 @app.get("/status", tags=["Diagnóstico"])
 def system_status():
-    return {"servidor": "activo", "websocket": len(manager.active_connections)}
+    return {
+        "servidor": "activo",
+        "websocket": len(manager.active_connections),
+        "logs": "logs/aegis.log"
+    }
 
 @app.get("/dashboard", tags=["Navegación"])
 async def redirigir_dashboard():
     target = os.path.join(FRONTEND_DIR, "dashboard.html")
     if os.path.exists(target): return FileResponse(target)
     return {"error": "Dashboard no encontrado"}
-
-@app.on_event("startup")
-async def startup_event():
-    print("🚀 SISTEMA LPR DESPLEGADO")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    print("🛑 SISTEMA DETENIDO")
 
 if __name__ == "__main__":
     import uvicorn
